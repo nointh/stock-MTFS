@@ -198,7 +198,9 @@ class LSTNet(nn.Module):
         
         #CNN
         c = x.view(-1, 1, self.P, self.m);
-        c = F.relu(self.conv1(c));
+        c = self.conv1(c)
+        c = F.relu(c)
+        # c = F.relu(self.conv1(c));
         c = self.dropout(c);
         c = torch.squeeze(c, 3);
         
@@ -364,7 +366,7 @@ args.save = 'exp/model/LSTNet.pt'
 args.cuda = False
 args.optim = 'adam'
 args.lr = 0.001
-args.horizon = 1
+args.horizon = 5
 args.skip = 24
 args.hidSkip = 5
 args.L1Loss = False
