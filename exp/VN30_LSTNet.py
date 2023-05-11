@@ -344,7 +344,7 @@ parser.add_argument('--horizon', type=int, default=1)
 parser.add_argument('--skip', type=float, default=24)
 parser.add_argument('--hidSkip', type=int, default=5)
 parser.add_argument('--L1Loss', type=bool, default=True)
-parser.add_argument('--normalize', type=int, default=0)
+parser.add_argument('--normalize', type=int, default=2)
 parser.add_argument('--output_fun', type=str, default='sigmoid')
 # args = parser.parse_args()
 args = dotdict()
@@ -352,7 +352,7 @@ args.data = './data/VN30.csv'
 args.model = 'LSTNet'
 args.hidCNN = 50
 args.hidRNN = 50
-args.window = 168
+args.window = 100
 args.CNN_kernel = 6
 args.highway_window = 24
 args.clip = 10.
@@ -362,11 +362,11 @@ args.dropout = 0.2
 args.seed = 54321
 args.gpu = None
 args.log_interval = 2000
-args.save = 'exp/model/LSTNet.pt'
+args.save = 'exp/save/LSTNet.pt'
 args.cuda = False
 args.optim = 'adam'
 args.lr = 0.001
-args.horizon = 5
+args.horizon = 1
 args.skip = 24
 args.hidSkip = 5
 args.L1Loss = False
@@ -422,8 +422,8 @@ try:
         # Save the model if the validation loss is the best we've seen so far.
 
         if val_loss < best_val:
-            with open(args.save, 'wb') as f:
-                torch.save(model, f)
+            # with open(args.save, 'wb') as f:
+            #     torch.save(model, f)
             best_val = val_loss
         if epoch % 5 == 0:
             test_acc, test_rae, test_corr  = evaluate(Data, Data.test[0], Data.test[1], model, evaluateL2, evaluateL1, args.batch_size);
@@ -434,7 +434,7 @@ except KeyboardInterrupt:
     print('Exiting from training early')
 
 # Load the best saved model.
-with open(args.save, 'rb') as f:
-    model = torch.load(f)
-test_acc, test_rae, test_corr  = evaluate(Data, Data.test[0], Data.test[1], model, evaluateL2, evaluateL1, args.batch_size);
-print ("test rse {:5.4f} | test rae {:5.4f} | test corr {:5.4f}".format(test_acc, test_rae, test_corr))
+# with open(args.save, 'rb') as f:
+#     model = torch.load(f)
+# test_acc, test_rae, test_corr  = evaluate(Data, Data.test[0], Data.test[1], model, evaluateL2, evaluateL1, args.batch_size);
+# print ("test rse {:5.4f} | test rae {:5.4f} | test corr {:5.4f}".format(test_acc, test_rae, test_corr))
