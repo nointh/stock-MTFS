@@ -22,7 +22,6 @@ const ChartComponent = props => {
 	const [chartType, setChartType] = useState('line')
 	const chartContainerRef = useRef();
 	const handleDataPanelCheckbox = event => {
-		console.log("this is the value for the checkbox", event.target.checked)
 		setCurrentDataVisible(event.target.checked)
 	}
 	const handleChartTypeInput = event => {
@@ -43,7 +42,7 @@ const ChartComponent = props => {
 					background: { type: ColorType.Solid, color: backgroundColor },
 					textColor,
 				},
-				width: chartContainerRef.current.clientWidth,
+				autoSize: true,
 				height: 500,
 			});
 			chart.applyOptions({
@@ -56,7 +55,7 @@ const ChartComponent = props => {
 			});
 			chart.timeScale().fitContent();
 
-			const priceSeries = chart.addLineSeries({ lineColor, topColor: areaTopColor, bottomColor: areaBottomColor, lineWidth: 3, priceScaleId: 'right', visible: chartType=='line'});
+			const priceSeries = chart.addLineSeries({ lineColor, topColor: areaTopColor, bottomColor: areaBottomColor, lineWidth: 2, priceScaleId: 'right', visible: chartType=='line'});
 			priceSeries.setData(data.map(
 				element => {
 				return {'time': element['time'], 'value': element['close']}}));
@@ -172,33 +171,37 @@ const ChartComponent = props => {
 	);
 
 	return (
-		<div
-			className={`${className} relative`}
-			ref={chartContainerRef}
-		>
-			<nav className='w-full p-3 flex align-middle justify-center bg-white border-gray-200 dark:bg-gray-900'>
-				<label class="relative inline-flex items-center cursor-pointer">
-					<input type="checkbox" value="" class="sr-only peer" checked={isCurrentDataVisible} onChange={handleDataPanelCheckbox}/>
-					<div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-					<span class="mx-3 text-sm font-medium text-gray-900 dark:text-gray-300">Show detail panel</span>
+		<div className="w-full">
+			<nav className='w-full p-3 flex align-middle justify-center bg-white '>
+				<label className="hidden sm:inline-flex relative items-center cursor-pointer">
+					<input type="checkbox" value="" className="sr-only peer" checked={isCurrentDataVisible} onChange={handleDataPanelCheckbox}/>
+					<div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+					<span className="mx-3 text-sm font-medium text-gray-900 dark:text-gray-300">Show detail panel</span>
 				</label>
-				<label class="relative inline-flex items-center cursor-pointer">
-					<select id="small" class="block text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onChange={handleChartTypeInput}>
-						<option value="line" selected>Line</option>
+				<label className="relative inline-flex items-center cursor-pointer">
+					<select id="small" className="block text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onChange={handleChartTypeInput} defaultValue={'line'}>
+						<option value="line">Line</option>
 						<option value="candle">Candle</option>
 						<option value="area">Area</option>
 					</select>
-					<span class="mx-3 text-sm font-medium text-gray-900 dark:text-gray-300">Chart type</span>
+					<span className="mx-3 text-sm font-medium text-gray-900 dark:text-gray-300">Chart type</span>
 				</label>
 
 			</nav>
-			{isCurrentDataVisible && currentData && <div className='absolute top-5 left-[5%] z-40 p-3 bg-gray-400 bg-opacity-70 rounded-md w-40'>
+			<div
+				className={`${className} relative`}
+			>			
+				{isCurrentDataVisible && currentData && <div className={`hidden sm:block absolute top-0 left-0 right-0 mx-auto z-40 p-3 bg-gray-400 bg-opacity-70 rounded-md w-1/6`}>
 				<div className='flex justify-between'><div>Open</div> <div>{currentData['open']}</div></div>
 				<div className='flex justify-between'><div>High</div> <div>{currentData['high']}</div></div>
 				<div className='flex justify-between'><div>Close</div> <div>{currentData['close']}</div></div>
 				<div className='flex justify-between'><div>Volume</div> <div>{currentData['volume']}</div></div>
 				<div className='flex justify-between'><div>% Change</div> <div>{currentData['change']} %</div></div>
-			</div>}
+				</div>}
+
+				<div className={`w-full h-full`} ref={chartContainerRef}>
+				</div>
+			</div>
 		</div>
 	);
 };
