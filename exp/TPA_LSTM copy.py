@@ -43,7 +43,7 @@ class Data_utility(object):
         tmp = self.test[1] * self.scale.expand(self.test[1].size(0), self.original_columns);
 
         if self.cuda:
-            self.scale = self.scale;
+            self.scale = self.scale.cuda();
         self.scale = Variable(self.scale);
 
         #rse and rae must be some sort of errors for now, will come back to them later
@@ -105,8 +105,8 @@ class Data_utility(object):
             X = inputs[excerpt];
             Y = targets[excerpt];
             if (self.cuda):
-                X = X;
-                Y = Y;
+                X = X.cuda();
+                Y = Y.cuda();
             yield Variable(X), Variable(Y);
             start_idx += batch_size
 
@@ -138,13 +138,13 @@ class TPA_LSTM_Modified(nn.Module):
         self.compute_convolution = nn.Conv2d(1, self.hidC, kernel_size=(
             self.Ck, self.hidden_state_features))  # hidC are the num of filters, default value of Ck is one
         self.attention_matrix = nn.Parameter(
-            torch.ones(args.batch_size, self.hidC, self.hidden_state_features, requires_grad=True)) #, device='cpu'
+            torch.ones(args.batch_size, self.hidC, self.hidden_state_features, requires_grad=True)) #, device='cuda'
         self.context_vector_matrix = nn.Parameter(
-            torch.ones(args.batch_size, self.hidden_state_features, self.hidC, requires_grad=True)) #, device='cpu'
+            torch.ones(args.batch_size, self.hidden_state_features, self.hidC, requires_grad=True)) #, device='cuda'
         self.final_state_matrix = nn.Parameter(
-            torch.ones(args.batch_size, self.hidden_state_features, self.hidden_state_features, requires_grad=True)) #, device='cpu'
+            torch.ones(args.batch_size, self.hidden_state_features, self.hidden_state_features, requires_grad=True)) #, device='cuda'
         self.final_matrix = nn.Parameter(
-            torch.ones(args.batch_size, self.original_columns, self.hidden_state_features, requires_grad=True)) #, device='cpu'
+            torch.ones(args.batch_size, self.original_columns, self.hidden_state_features, requires_grad=True)) #, device='cuda'
 
         self.attention_matrix_uni_lstm = nn.Parameter(
             torch.ones(args.batch_size, self.hidden_state_features_uni_lstm, self.hidden_state_features_uni_lstm, self.original_columns, requires_grad=True))
@@ -377,7 +377,7 @@ class TPA_LSTM_Modified(nn.Module):
             z = z.view(-1, self.original_columns);
             res = final_result + z;
 
-        return res
+        return torch.sigmoid(res)
 
 class TPA_LSTM(nn.Module):
     def __init__(self, args, data):
@@ -400,13 +400,13 @@ class TPA_LSTM(nn.Module):
         self.compute_convolution = nn.Conv2d(1, self.hidC, kernel_size=(
             self.Ck, self.hidden_state_features))  # hidC are the num of filters, default value of Ck is one
         self.attention_matrix = nn.Parameter(
-            torch.ones(args.batch_size, self.hidC, self.hidden_state_features, requires_grad=True))
+            torch.ones(args.batch_size, self.hidC, self.hidden_state_features, requires_grad=True, device='cuda'))
         self.context_vector_matrix = nn.Parameter(
-            torch.ones(args.batch_size, self.hidden_state_features, self.hidC, requires_grad=True))
+            torch.ones(args.batch_size, self.hidden_state_features, self.hidC, requires_grad=True, device='cuda'))
         self.final_state_matrix = nn.Parameter(
-            torch.ones(args.batch_size, self.hidden_state_features, self.hidden_state_features, requires_grad=True, device='cpu'))
+            torch.ones(args.batch_size, self.hidden_state_features, self.hidden_state_features, requires_grad=True, device='cuda'))
         self.final_matrix = nn.Parameter(
-            torch.ones(args.batch_size, self.original_columns, self.hidden_state_features, requires_grad=True, device='cpu'))
+            torch.ones(args.batch_size, self.original_columns, self.hidden_state_features, requires_grad=True, device='cuda'))
         torch.nn.init.xavier_uniform(self.attention_matrix)
         torch.nn.init.xavier_uniform(self.context_vector_matrix)
         torch.nn.init.xavier_uniform(self.final_state_matrix)
@@ -430,9 +430,7 @@ class TPA_LSTM(nn.Module):
     def forward(self, input):
         batch_size = input.size(0);
         if (self.use_cuda):
-            x = input
-        else:
-            x = input
+            x = input.cuda()
 
         """
            Step 1. First step is to feed this information to LSTM and find out the hidden states 
@@ -513,9 +511,9 @@ class TPA_LSTM(nn.Module):
         """
         convolution_output_for_scoring = final_convolution_output.permute(0, 2, 1).contiguous()
         final_hn_realigned = final_hn.permute(0, 2, 1).contiguous()
-        convolution_output_for_scoring = convolution_output_for_scoring
-        final_hn_realigned = final_hn_realigned
-        mat1 = torch.bmm(convolution_output_for_scoring, self.attention_matrix)
+        convolution_output_for_scoring = convolution_output_for_scoring.cuda()
+        final_hn_realigned = final_hn_realigned.cuda()
+        mat1 = torch.bmm(convolution_output_for_scoring, self.attention_matrix).cuda()
         scoring_function = torch.bmm(mat1, final_hn_realigned)
         alpha = torch.nn.functional.sigmoid(scoring_function)
         context_vector = alpha * convolution_output_for_scoring
@@ -546,7 +544,7 @@ class TPA_LSTM(nn.Module):
             z = z.view(-1, self.original_columns);
             res = final_result + z;
 
-        return res
+        return torch.sigmoid(res)
 
 """THE DRIVER CLASS TO RUN THIS CODE"""
 
@@ -558,9 +556,9 @@ parser = argparse.ArgumentParser(description='PyTorch Time series forecasting')
 parser.add_argument('--data', type=str, default="exp/data/VN30_price.csv",
                     help='location of the data file')
 #, required=True
-parser.add_argument('--model', type=str, default='TPA_LSTM',
+parser.add_argument('--model', type=str, default='TPA_LSTM_Modified',
                     help='')
-parser.add_argument('--hidden_state_features', type=int, default=128,
+parser.add_argument('--hidden_state_features', type=int, default=12,
                     help='number of features in LSTMs hidden states')
 parser.add_argument('--num_layers_lstm', type=int, default=1,
                     help='num of lstm layers')
@@ -586,14 +584,14 @@ parser.add_argument('--epochs', type=int, default=3000,
                     help='upper epoch limit') #30
 parser.add_argument('--batch_size', type=int, default=128, metavar='N',
                     help='batch size')
-parser.add_argument('--dropout', type=float, default=0.2,
+parser.add_argument('--dropout', type=float, default=0.5,
                     help='dropout applied to layers (0 = no dropout)')
 parser.add_argument('--seed', type=int, default=54321,
                     help='random seed')
 parser.add_argument('--gpu', type=int, default=None)
 parser.add_argument('--log_interval', type=int, default=2000, metavar='N',
                     help='report interval')
-parser.add_argument('--save', type=str, default='exp/save/TPA_LSTM_multistock.pt',
+parser.add_argument('--save', type=str, default='model/model.pt',
                     help='path to save the final model')
 parser.add_argument('--cuda', type=str, default=False)
 parser.add_argument('--optim', type=str, default='adam')
@@ -603,7 +601,7 @@ parser.add_argument('--horizon', type=int, default=1)
 parser.add_argument('--skip', type=float, default=24)
 parser.add_argument('--hidSkip', type=int, default=5)
 parser.add_argument('--L1Loss', type=bool, default=True)
-parser.add_argument('--normalize', type=int, default=0)
+parser.add_argument('--normalize', type=int, default=2)
 parser.add_argument('--output_fun', type=str, default='sigmoid')
 args = parser.parse_args()
 
@@ -674,7 +672,7 @@ device = 'cpu'
 
 model = eval(args.model)(args, Data);
 if(args.cuda):
-    model
+    model.cuda()
 
 
 #print(dict(model.named_parameters()))
@@ -685,9 +683,9 @@ else:
 evaluateL2 = nn.MSELoss(size_average=False);
 evaluateL1 = nn.L1Loss(size_average=False)
 if args.cuda:
-    criterion = criterion
-    evaluateL1 = evaluateL1;
-    evaluateL2 = evaluateL2;
+    criterion = criterion.cuda()
+    evaluateL1 = evaluateL1.cuda();
+    evaluateL2 = evaluateL2.cuda();
 
 nParams = sum([p.nelement() for p in model.parameters()])
 print('* number of parameters: %d' % nParams)
@@ -721,8 +719,3 @@ try:
 except KeyboardInterrupt:
     print('-' * 89)
     print('Exiting from training early')
-
-with open(args.save, 'rb') as f:
-    model = torch.load(f)
-test_acc, test_rae, test_corr  = evaluate(Data, Data.test[0], Data.test[1], model, evaluateL2, evaluateL1, args.batch_size);
-print ("test rse {:5.4f} | test rae {:5.4f} | test corr {:5.4f}".format(test_acc, test_rae, test_corr))
