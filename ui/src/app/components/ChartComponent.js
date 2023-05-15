@@ -16,7 +16,6 @@ const ChartComponent = props => {
 		} = {},
 		predictData=samplePredictedData,
 	} = props;
-	const allData = [...data, ...predictData];
 	const [currentData, setCurrentData] = useState(null)
 	const [isCurrentDataVisible, setCurrentDataVisible] = useState(true)
 	const [chartType, setChartType] = useState('line')
@@ -33,6 +32,8 @@ const ChartComponent = props => {
 	}
 	useEffect(
 		() => {
+			const allData = [...data, ...predictData];
+
 			const handleResize = () => {
 				chart.applyOptions({ width: chartContainerRef.current.clientWidth });
 			};
