@@ -107,8 +107,8 @@ args.cuda = args.gpu is not None
 data = dotdict()
 data.m = 22
 model = LSTNet(args, data)
-model.load_state_dict(torch.load('LSTNet_state.pt'))
+model.load_state_dict(torch.load('exp/load_save_example/LSTNet_state.pt'))
 print(model)
 model.eval()
 data = torch.rand(size=(1, 100, 22))
-print(model(data))
+print(model(data).shape)
