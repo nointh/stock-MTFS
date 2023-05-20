@@ -20,7 +20,6 @@ app.include_router(history.router)
 def start_db_client():
     app.mongo_client = MongoClient(mongo_uri)
     app.database = app.mongo_client['stock_price']
-    print(app.database)
 
 @app.on_event("shutdown")
 def shutdown_db_client():
