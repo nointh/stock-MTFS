@@ -33,8 +33,8 @@ export default function ChartPage() {
 
   async function fetchPredictData() {
     const apiUrl = algorithm === "long-term"
-      ? "https://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/predict/vn30/long-term?pred_len=${predictLength}"
-      : `https://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/predict/${algorithm}?pred_len=${predictLength}`;
+      ? `https://ec2-3-25-179-86.ap-southeast-2.compute.amazonaws.com/predict/vn30/long-term?pred_len=${predictLength}`
+      : `https://ec2-3-25-179-86.ap-southeast-2.compute.amazonaws.com/predict/${algorithm}?pred_len=${predictLength}`;
 
     try {
       const response = await fetch(apiUrl);
@@ -70,7 +70,7 @@ export default function ChartPage() {
 
   async function fetchData() {
     try {
-      const res = await fetch('https://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/history');
+      const res = await fetch(`https://ec2-3-25-179-86.ap-southeast-2.compute.amazonaws.com/history`);
       const data = await res.json();
 
       const uniqueDates = new Set(); // Set to store unique dates
