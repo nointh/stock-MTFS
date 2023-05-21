@@ -3,7 +3,6 @@ import { createChart, ColorType } from 'lightweight-charts';
 import React, { useState, useEffect, useRef } from 'react';
 
 const ChartComponent = props => {
-	const samplePredictData = [{"open":551.2,"close":558.79,"high":559.12,"low":550.7,"volume":15831290.0,"date":"2023-05-22T00:00:00","change":0.95},{"open":562.28,"close":566.46,"high":570.06,"low":562.28,"volume":28326100.0,"date":"2023-05-23T00:00:00","change":1.37},{"open":570.14,"close":567.79,"high":570.56,"low":567.52,"volume":19183670.0,"date":"2023-05-24T00:00:00","change":0.22999999999999998}]
 	const {
 		data,
 		className,
@@ -14,9 +13,10 @@ const ChartComponent = props => {
 			areaTopColor = '#2962FF',
 			areaBottomColor = 'rgba(41, 98, 255, 0.28)',
 		} = {},
-		predictData=samplePredictData,
+		predictData,
 	} = props;
-	console.log("props", data)
+	console.log("props.data", props.predictData)
+	console.log("props.predict", props.predict)
 	const [currentData, setCurrentData] = useState(null)
 	const [isCurrentDataVisible, setCurrentDataVisible] = useState(true)
 	const [chartType, setChartType] = useState('line')
@@ -33,9 +33,7 @@ const ChartComponent = props => {
 	}
 	useEffect(
 		() => {
-			const allData = [...data, ...predictData].sort(
-				(a, b) => new Date(a.time) - new Date(b.time)
-			);
+			const allData = [...data, ...predictData]
 
 			const handleResize = () => {
 				chart.applyOptions({ width: chartContainerRef.current.clientWidth });

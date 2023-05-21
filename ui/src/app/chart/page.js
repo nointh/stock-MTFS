@@ -1,7 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import ChartComponent from '../components/ChartComponent';
-import vn30Data from './vn30_historial_data.json';
 
 
 export default function ChartPage() {
@@ -24,13 +23,25 @@ export default function ChartPage() {
   };
 
   const handleButtonClick = () => {
-    const apiUrl = `http://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/predict/${selectedOption}`;
+    const apiUrl = `https://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/predict/lstnet`;
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
         // Handle the API response data
-        console.log(data);
-        setPredictData(data); // Update the predictData state with the received data
+        const formattedData = data.data.VN30.map((element) => {
+          const formattedElement = {
+            open: element.open || null,
+            close: element.close || null,
+            high: element.high || null,
+            low: element.low || null,
+            volume: element.volume || null,
+            time: element.date || null,
+            change: element.change || null,
+          };
+          return formattedElement;
+        }).sort((a, b) => a.time - b.time);
+        console.log("predict Data", formattedData);
+        setPredictData(formattedData); 
       })
       .catch((error) => {
         // Handle errors
@@ -38,9 +49,11 @@ export default function ChartPage() {
       });
   };
 
+
+
   async function fetchData() {
     try {
-      const res = await fetch('http://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/history');
+      const res = await fetch('https://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/history');
       const data = await res.json();
 
       const formattedData = data.data.map((element) => ({
@@ -51,10 +64,10 @@ export default function ChartPage() {
         low: element.low,
         volume: element.volume,
         change: element.change,
-      })).sort((a, b) => Number(new Date(a['time'])) - Number(new Date(b['time'])));
+      })).sort((a, b) => a.time - b.time);
+      ;
 
       setData(formattedData);
-      console.log(formattedData)
       setIsLoading(false); // Set loading state to false after data has been fetched
     } catch (error) {
       console.error(error);
@@ -69,7 +82,7 @@ export default function ChartPage() {
         {isLoading ? (
           <p>Loading...</p> // Show a loading indicator while data is being fetched
         ) : (
-          <ChartComponent className="w-full h-full" data={data} predictData={predictData || []} />
+          <ChartComponent className="w-full h-full" data={data || []} predictData={predictData || []} />
         )}
       </div>
 
