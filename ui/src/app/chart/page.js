@@ -1,6 +1,8 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import ChartComponent from '../components/ChartComponent';
+import vn30Data from './vn30_historial_data.json';
+
 
 export default function ChartPage() {
   const [selectedOption, setSelectedOption] = useState('');
@@ -22,7 +24,7 @@ export default function ChartPage() {
   };
 
   const handleButtonClick = () => {
-    const apiUrl = `http://localhost:8000/api/predictions/?algorithm=${selectedOption}&predict_range=${inputValue}`;
+    const apiUrl = `http://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/predict/${selectedOption}`;
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
@@ -40,7 +42,8 @@ export default function ChartPage() {
     try {
       const res = await fetch('http://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/history');
       const data = await res.json();
-      const formattedData = data.map((element) => ({
+
+      const formattedData = data.data.map((element) => ({
         time: new Date(element.date).toISOString().substring(0, 10),
         open: element.open,
         close: element.close,
@@ -48,8 +51,10 @@ export default function ChartPage() {
         low: element.low,
         volume: element.volume,
         change: element.change,
-      }));
+      })).sort((a, b) => Number(new Date(a['time'])) - Number(new Date(b['time'])));
+
       setData(formattedData);
+      console.log(formattedData)
       setIsLoading(false); // Set loading state to false after data has been fetched
     } catch (error) {
       console.error(error);
