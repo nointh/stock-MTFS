@@ -16,6 +16,7 @@ const ChartComponent = props => {
 		} = {},
 		predictData=samplePredictedData,
 	} = props;
+	console.log(props.data)
 	const [currentData, setCurrentData] = useState(null)
 	const [isCurrentDataVisible, setCurrentDataVisible] = useState(true)
 	const [chartType, setChartType] = useState('line')

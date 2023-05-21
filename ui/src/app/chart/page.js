@@ -1,13 +1,13 @@
-import React from 'react';
-import { useClient } from 'react-server-dom-webpack';
+"use client"
+import React, { useEffect } from 'react';
 import ChartComponent from '../components/ChartComponent';
 
 export default function ChartPage() {
-  const [selectedOption, setSelectedOption] = useClient(() => React.useState(''));
-  const [inputValue, setInputValue] = useClient(() => React.useState(''));
-  const [data, setData] = useClient(() => React.useState([]));
+  const [selectedOption, setSelectedOption] =  React.useState('');
+  const [inputValue, setInputValue] =  React.useState('');
+  const [data, setData] =  React.useState([]);
 
-  useClient(() => {
+  useEffect(() => {
     getData();
   }, []);
 
@@ -35,7 +35,7 @@ export default function ChartPage() {
   };
 
   async function getData() {
-    const res = await fetch('https://v30.ftisu.vn/get-vn30-history/');
+    const res = await fetch('http://localhost:8000/get-vn30-history/');
     const data = await res.json();
     const formattedData = data
       .map((element) => ({
@@ -48,7 +48,6 @@ export default function ChartPage() {
         change: element['Change'],
       }))
       .sort((a, b) => Number(new Date(a['time'])) - Number(new Date(b['time'])));
-
     setData(formattedData);
   }
 
