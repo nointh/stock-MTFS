@@ -102,14 +102,16 @@ const ChartComponent = props => {
 			const predictPriceSeries = chart.addLineSeries(
 				{ lineColor: 'orange', topColor: areaTopColor, bottomColor: areaBottomColor, lineWidth: 2, visible: chartType === 'line' });
 
-			predictPriceSeries.setData([data.slice(-1)[0], ...predictData].map(
+			// predictPriceSeries.setData([data.slice(-1)[0], ...predictData].map(
+			predictPriceSeries.setData([...predictData].map(
 				element => {
 					return { 'time': element['time'], 'value': element['close'], 'color': 'orange' }
 				}))
 
 			const predictAreaSeries = chart.addAreaSeries(
 				{ lineColor: 'orange', topColor: 'rgb(255, 213, 97)', bottomColor: 'rgb(242, 217, 148)', lineWidth: 2, visible: chartType === 'area' });
-			predictAreaSeries.setData([data.slice(-1)[0], ...predictData].map(
+			// predictAreaSeries.setData([data.slice(-1)[0], ...predictData].map(
+			predictAreaSeries.setData( [...predictData].map(
 				element => {
 					return { 'time': element['time'], 'value': element['close'] }
 				}));

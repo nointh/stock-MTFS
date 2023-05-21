@@ -4,8 +4,8 @@ import ChartComponent from '../components/ChartComponent';
 
 
 export default function ChartPage() {
-  const [selectedOption, setSelectedOption] = useState('');
-  const [inputValue, setInputValue] = useState('');
+  const [algorithm, setAlgorithm] = useState('');
+  const [predictLength, setPredictLength] = useState('');
   const [data, setData] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [predictData, setPredictData] = useState();
@@ -14,54 +14,53 @@ export default function ChartPage() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (predictData) {
+      setData((prevData) => [...prevData, ...predictData]);
+    }
+  }, [predictData]);
+
   const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
+    setAlgorithm(event.target.value);
   };
 
   const handleInputChange = (event) => {
-    setInputValue(event.target.value);
+    setPredictLength(event.target.value);
   };
-
   const handleButtonClick = () => {
-    const apiUrl = `https://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/predict/lstnet`;
-    fetch(apiUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        // Handle the API response data
-        const formattedData = data.data.VN30.reduce((accumulator, element) => {
-          const date = element.date;
-          const existingItem = accumulator.find((item) => item.time === date);
-          if (!existingItem) {
-            const formattedElement = {
-              open: element.open || 0,
-              close: element.close || 0,
-              high: element.high || 0,
-              low: element.low || 0,
-              volume: element.volume || 0,
-              time: element.date || 0,
-              change: element.change || 0,
-            };
-            accumulator.push(formattedElement);
-          }
-          return accumulator;
-        }, []);
-        console.log("predict Data", formattedData);
-        setPredictData(formattedData); // Update the predictData state with the formatted data
-      })
-      .catch((error) => {
-        // Handle errors
-        console.error(error);
-      });
+    fetchPredictData();
   };
-  
 
+  async function fetchPredictData() {
+    const apiUrl = `https://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/predict/${algorithm}?pred_len=${predictLength}`;
+    try {
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+      const formattedData = data.data.VN30.map((element) => {
+        const date = element.date.substring(0, 10);
+        return {
+          open: element.open || 0,
+          close: element.value || 0,
+          high: element.high || 0,
+          low: element.low || 0,
+          volume: element.volume || 0,
+          time: date,
+          change: element.change || 0,
+        };
+      }).sort((a, b) => a.time.localeCompare(b.time));
+      console.log('predict Data', formattedData);
+      setPredictData(formattedData);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
 
   async function fetchData() {
     try {
       const res = await fetch('https://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/history');
       const data = await res.json();
-  
+
       const uniqueDates = new Set(); // Set to store unique dates
       const formattedData = data.data.reduce((accumulator, element) => {
         const date = new Date(element.date).toISOString().substring(0, 10);
@@ -79,7 +78,7 @@ export default function ChartPage() {
         }
         return accumulator;
       }, []).sort((a, b) => a.time.localeCompare(b.time)); // Sort the array by time (date)
-  
+
       console.log(formattedData[2317]);
       console.log(formattedData[2316]);
       console.log("history res", formattedData);
@@ -90,7 +89,7 @@ export default function ChartPage() {
       setIsLoading(false); // Set loading state to false in case of an error
     }
   }
-  
+
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between md:p-24">
@@ -105,40 +104,35 @@ export default function ChartPage() {
 
       {/* Radio Selections */}
       <div>
-        <label>
-          <input
-            type="radio"
-            value="lstm"
-            checked={selectedOption === 'lstm'}
-            onChange={handleOptionChange}
-          />
-          lstm
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="xgboost"
-            checked={selectedOption === 'xgboost'}
-            onChange={handleOptionChange}
-          />
-          xgboost
-        </label>
-        {/* Add more radio options as needed */}
+        {['lstnet', 'lstm', 'xgboost', 'mtgnn', 'random-forest', 'var'].map((option) => (
+          <div key={option}>
+            <label>
+              <input
+                type="radio"
+                value={option}
+                checked={algorithm === option}
+                onChange={handleOptionChange}
+              />
+              {option}
+            </label>
+          </div>
+        ))}
       </div>
+
 
       {/* Input */}
       <div>
         <input
           type="text"
-          value={inputValue}
+          value={predictLength}
           onChange={handleInputChange}
-          placeholder="Enter a value"
+          placeholder="Enter prediction length"
         />
       </div>
 
       {/* Button */}
       <div>
-        <button onClick={handleButtonClick}>Execute API</button>
+          <button onClick={handleButtonClick}>Execute API</button>
       </div>
     </main>
   );
