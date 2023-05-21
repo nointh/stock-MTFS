@@ -5,7 +5,7 @@ import ChartComponent from '../components/ChartComponent';
 
 export default function ChartPage() {
   const [algorithm, setAlgorithm] = useState('');
-  const [predictLength, setPredictLength] = useState(30);
+  const [predictLength, setPredictLength] = useState(7);
   const [data, setData] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [predictData, setPredictData] = useState();
