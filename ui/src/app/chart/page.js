@@ -32,22 +32,34 @@ export default function ChartPage() {
   };
 
   async function fetchPredictData() {
-    const apiUrl = `https://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/predict/${algorithm}?pred_len=${predictLength}`;
+    const apiUrl = algorithm === "long-term"
+      ? "https://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/predict/vn30/long-term"
+      : `https://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/predict/${algorithm}?pred_len=${predictLength}`;
+
     try {
       const response = await fetch(apiUrl);
       const data = await response.json();
-      const formattedData = data.data.VN30.map((element) => {
-        const date = element.date.substring(0, 10);
-        return {
-          open: element.open || 0,
-          close: element.value || 0,
-          high: element.high || 0,
-          low: element.low || 0,
-          volume: element.volume || 0,
-          time: date,
-          change: element.change || 0,
-        };
-      }).sort((a, b) => a.time.localeCompare(b.time));
+
+      const formattedData = algorithm === "long-term"
+        ? data.data.map(({ date, close, open, high, low, volume, change }) => ({
+          open: open || 0,
+          close: close || 0,
+          high: high || 0,
+          low: low || 0,
+          volume: volume || 0,
+          time: date.substring(0, 10),
+          change: change || 0,
+        })).sort((a, b) => a.time.localeCompare(b.time))
+        : data.data.VN30.map(({ date, value, open, high, low, volume, change }) => ({
+          open: open || 0,
+          close: value || 0,
+          high: high || 0,
+          low: low || 0,
+          volume: volume || 0,
+          time: date.substring(0, 10),
+          change: change || 0,
+        })).sort((a, b) => a.time.localeCompare(b.time));
+
       console.log('predict Data', formattedData);
       setPredictData(formattedData);
     } catch (error) {
@@ -79,9 +91,7 @@ export default function ChartPage() {
         return accumulator;
       }, []).sort((a, b) => a.time.localeCompare(b.time)); // Sort the array by time (date)
 
-      console.log(formattedData[2317]);
-      console.log(formattedData[2316]);
-      console.log("history res", formattedData);
+      // console.log("history res", formattedData);
       setData(formattedData);
       setIsLoading(false); // Set loading state to false after data has been fetched
     } catch (error) {
@@ -104,7 +114,7 @@ export default function ChartPage() {
 
       {/* Radio Selections */}
       <div>
-        {['lstnet', 'lstm', 'xgboost', 'mtgnn', 'random-forest', 'var'].map((option) => (
+        {['lstnet', 'lstm', 'xgboost', 'mtgnn', 'random-forest', 'var', 'long-term'].map((option) => (
           <div key={option}>
             <label>
               <input
@@ -132,7 +142,7 @@ export default function ChartPage() {
 
       {/* Button */}
       <div>
-          <button onClick={handleButtonClick}>Execute API</button>
+        <button onClick={handleButtonClick}>Execute API</button>
       </div>
     </main>
   );
