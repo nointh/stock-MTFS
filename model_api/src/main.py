@@ -1,8 +1,11 @@
 import os
 from fastapi import FastAPI
-from routers import prediction, history
+from fastapi.middleware.cors import CORSMiddleware
+
 from pymongo import MongoClient
 from dotenv import load_dotenv, find_dotenv
+
+from routers import prediction, history
 
 load_dotenv(find_dotenv())
 
@@ -12,6 +15,16 @@ MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD")
 mongo_uri = f'mongodb+srv://{MONGO_USERNAME}:{MONGO_PASSWORD}@cluster0.7julke9.mongodb.net/?retryWrites=true&w=majority'
 
 app = FastAPI(title="Multivariate time series forecasting model serving API")
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(prediction.router)
 app.include_router(history.router)
