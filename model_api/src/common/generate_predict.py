@@ -95,6 +95,8 @@ def generate_multistock_mtgnn_predict(data, timestamp, predict_len=1):
     model = get_mtgnn_multistock_model()
     state_dict = torch.load(join(WORKING_DIR, 'static/models/mtgnn_multistock_state.pt'))
     model.load_state_dict(state_dict)
+    max_arr = np.load(join(WORKING_DIR, 'static/scalers/max.npy'))
+    data = data / max_arr
     predict_result = []
     for i in range(predict_len):
         model.eval()
@@ -114,7 +116,7 @@ def generate_multistock_mtgnn_predict(data, timestamp, predict_len=1):
         for stock_idx, data in enumerate(predict):
             result[STOCK_COLLECTIONS[stock_idx]].append({
                 'date': future_timestamp[idx],
-                'value': data
+                'value': data * max_arr[stock_idx]
             })
     return result
  
