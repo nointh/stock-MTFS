@@ -6,9 +6,9 @@ import ChartComponent from '../components/ChartComponent';
 export default function ChartPage() {
   const [selectedOption, setSelectedOption] = useState('');
   const [inputValue, setInputValue] = useState('');
-  const [data, setData] = useState([]);
+  const [data, setData] = useState();
   const [isLoading, setIsLoading] = useState(true);
-  const [predictData, setPredictData] = useState(null);
+  const [predictData, setPredictData] = useState();
 
   useEffect(() => {
     fetchData();
@@ -28,26 +28,32 @@ export default function ChartPage() {
       .then((response) => response.json())
       .then((data) => {
         // Handle the API response data
-        const formattedData = data.data.VN30.map((element) => {
-          const formattedElement = {
-            open: element.open || null,
-            close: element.close || null,
-            high: element.high || null,
-            low: element.low || null,
-            volume: element.volume || null,
-            time: element.date || null,
-            change: element.change || null,
-          };
-          return formattedElement;
-        }).sort((a, b) => a.time - b.time);
+        const formattedData = data.data.VN30.reduce((accumulator, element) => {
+          const date = element.date;
+          const existingItem = accumulator.find((item) => item.time === date);
+          if (!existingItem) {
+            const formattedElement = {
+              open: element.open || 0,
+              close: element.close || 0,
+              high: element.high || 0,
+              low: element.low || 0,
+              volume: element.volume || 0,
+              time: element.date || 0,
+              change: element.change || 0,
+            };
+            accumulator.push(formattedElement);
+          }
+          return accumulator;
+        }, []);
         console.log("predict Data", formattedData);
-        setPredictData(formattedData); 
+        setPredictData(formattedData); // Update the predictData state with the formatted data
       })
       .catch((error) => {
         // Handle errors
         console.error(error);
       });
   };
+  
 
 
 
@@ -55,18 +61,28 @@ export default function ChartPage() {
     try {
       const res = await fetch('https://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/history');
       const data = await res.json();
-
-      const formattedData = data.data.map((element) => ({
-        time: new Date(element.date).toISOString().substring(0, 10),
-        open: element.open,
-        close: element.close,
-        high: element.high,
-        low: element.low,
-        volume: element.volume,
-        change: element.change,
-      })).sort((a, b) => a.time - b.time);
-      ;
-
+  
+      const uniqueDates = new Set(); // Set to store unique dates
+      const formattedData = data.data.reduce((accumulator, element) => {
+        const date = new Date(element.date).toISOString().substring(0, 10);
+        if (!uniqueDates.has(date)) {
+          uniqueDates.add(date); // Add unique date to the Set
+          accumulator.push({
+            time: date,
+            open: element.open || 0,
+            close: element.close || 0,
+            high: element.high || 0,
+            low: element.low || 0,
+            volume: element.volume || 0,
+            change: element.change || 0,
+          });
+        }
+        return accumulator;
+      }, []).sort((a, b) => a.time.localeCompare(b.time)); // Sort the array by time (date)
+  
+      console.log(formattedData[2317]);
+      console.log(formattedData[2316]);
+      console.log("history res", formattedData);
       setData(formattedData);
       setIsLoading(false); // Set loading state to false after data has been fetched
     } catch (error) {
@@ -74,6 +90,7 @@ export default function ChartPage() {
       setIsLoading(false); // Set loading state to false in case of an error
     }
   }
+  
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between md:p-24">
@@ -82,7 +99,7 @@ export default function ChartPage() {
         {isLoading ? (
           <p>Loading...</p> // Show a loading indicator while data is being fetched
         ) : (
-          <ChartComponent className="w-full h-full" data={data || []} predictData={predictData || []} />
+          <ChartComponent className="w-full h-full" data={data} predictData={predictData || []} />
         )}
       </div>
 
