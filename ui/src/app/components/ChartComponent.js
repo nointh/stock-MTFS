@@ -1,11 +1,10 @@
 "use client"; 
-
 import { createChart, ColorType } from 'lightweight-charts';
 import React, { useState, useEffect, useRef } from 'react';
 
 const ChartComponent = props => {
 	const {
-		data=initialData,
+		data,
 		className,
 		colors: {
 			backgroundColor = 'white',
@@ -14,9 +13,8 @@ const ChartComponent = props => {
 			areaTopColor = '#2962FF',
 			areaBottomColor = 'rgba(41, 98, 255, 0.28)',
 		} = {},
-		predictData=samplePredictedData,
+		predictData,
 	} = props;
-	console.log(props.data)
 	const [currentData, setCurrentData] = useState(null)
 	const [isCurrentDataVisible, setCurrentDataVisible] = useState(true)
 	const [chartType, setChartType] = useState('line')

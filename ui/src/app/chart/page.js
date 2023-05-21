@@ -1,14 +1,16 @@
 "use client"
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChartComponent from '../components/ChartComponent';
 
 export default function ChartPage() {
-  const [selectedOption, setSelectedOption] =  React.useState('');
-  const [inputValue, setInputValue] =  React.useState('');
-  const [data, setData] =  React.useState([]);
+  const [selectedOption, setSelectedOption] = useState('');
+  const [inputValue, setInputValue] = useState('');
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [predictData, setPredictData] = useState(null);
 
   useEffect(() => {
-    getData();
+    fetchData();
   }, []);
 
   const handleOptionChange = (event) => {
@@ -20,13 +22,13 @@ export default function ChartPage() {
   };
 
   const handleButtonClick = () => {
-
-    const apiUrl = `YOUR_API_ENDPOINT?selectedOption=${selectedOption}&inputValue=${inputValue}`;
+    const apiUrl = `http://localhost:8000/api/predictions/?algorithm=${selectedOption}&predict_range=${inputValue}`;
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
         // Handle the API response data
         console.log(data);
+        setPredictData(data); // Update the predictData state with the received data
       })
       .catch((error) => {
         // Handle errors
@@ -34,28 +36,36 @@ export default function ChartPage() {
       });
   };
 
-  async function getData() {
-    const res = await fetch('http://localhost:8000/get-vn30-history/');
-    const data = await res.json();
-    const formattedData = data
-      .map((element) => ({
-        time: new Date(element['Date']).toISOString().substring(0, 10),
-        open: element['Open'],
-        close: element['Price'],
-        high: element['High'],
-        low: element['Low'],
-        volume: element['Vol'],
-        change: element['Change'],
-      }))
-      .sort((a, b) => Number(new Date(a['time'])) - Number(new Date(b['time'])));
-    setData(formattedData);
+  async function fetchData() {
+    try {
+      const res = await fetch('http://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/history');
+      const data = await res.json();
+      const formattedData = data.map((element) => ({
+        time: new Date(element.date).toISOString().substring(0, 10),
+        open: element.open,
+        close: element.close,
+        high: element.high,
+        low: element.low,
+        volume: element.volume,
+        change: element.change,
+      }));
+      setData(formattedData);
+      setIsLoading(false); // Set loading state to false after data has been fetched
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false); // Set loading state to false in case of an error
+    }
   }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between md:p-24">
       {/* Chart Area */}
       <div className="z-10 w-full md:max-w-8xl max-h-[80%] items-center justify-between font-mono text-sm lg:flex">
-        <ChartComponent className="w-full h-full" data={data} />
+        {isLoading ? (
+          <p>Loading...</p> // Show a loading indicator while data is being fetched
+        ) : (
+          <ChartComponent className="w-full h-full" data={data} predictData={predictData || []} />
+        )}
       </div>
 
       {/* Radio Selections */}
@@ -63,20 +73,20 @@ export default function ChartPage() {
         <label>
           <input
             type="radio"
-            value="option1"
-            checked={selectedOption === 'option1'}
+            value="lstm"
+            checked={selectedOption === 'lstm'}
             onChange={handleOptionChange}
           />
-          Option 1
+          lstm
         </label>
         <label>
           <input
             type="radio"
-            value="option2"
-            checked={selectedOption === 'option2'}
+            value="xgboost"
+            checked={selectedOption === 'xgboost'}
             onChange={handleOptionChange}
           />
-          Option 2
+          xgboost
         </label>
         {/* Add more radio options as needed */}
       </div>
