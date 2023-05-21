@@ -33,7 +33,7 @@ export default function ChartPage() {
 
   async function fetchPredictData() {
     const apiUrl = algorithm === "long-term"
-      ? "https://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/predict/vn30/long-term"
+      ? "https://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/predict/vn30/long-term?pred_len=${predictLength}"
       : `https://ec2-13-239-176-190.ap-southeast-2.compute.amazonaws.com/predict/${algorithm}?pred_len=${predictLength}`;
 
     try {
