@@ -22,7 +22,7 @@ mongo_uri = f'mongodb+srv://{MONGO_USERNAME}:{MONGO_PASSWORD}@cluster0.7julke9.m
 mongo_client = MongoClient(mongo_uri)
 
 # Select the 'stock_price' database and the 'VN30' collection
-database = mongo_client['stock_price']
+database = mongo_client['stock_price']   
 vn30_collection = database['VN30']
 
 def insert_record(collection, record):
