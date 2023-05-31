@@ -1,90 +1,126 @@
-import os
-from os.path import dirname, abspath, join
-
 from fastapi import APIRouter, Request
-import numpy as np
-import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
-from keras.models import load_model
-from common.constant import WORKING_DIR
-from common.prepare_data import get_multistock_data, get_vn30_data
-from common.time_features import time_features
-from common.generate_predict import (
-    generate_long_term_predict, 
-    generate_multistock_lstnet_predict, 
-    generate_multistock_xgboost_predict,
-    generate_multistock_random_forest_predict,
-    generate_multistock_mtgnn_predict,
-    generate_multistock_var_predict,
-    generate_multistock_lstm_predict
-)
+from datetime import datetime, timedelta
 
 router = APIRouter(
     prefix='/predict',
     tags=['prediction']
 )
 
-# @router.get('/lstm')
-# def get_lstm_prediction():
-#     url = 'https://raw.githubusercontent.com/huy164/datasets/master/VN30_price.csv'
-#     df = pd.read_csv(url)
+
+# @router.get('/vn30/long-term')
+# def get_long_term_forecasting(request: Request, pred_len: int=50):
+
+#     return
 
 
-#     data = df['VN30'].values.reshape(-1, 1)
-#     scaler = MinMaxScaler(feature_range=(0, 1))
-#     data = scaler.fit_transform(data)
+# @router.get('/lstnet')
+# def get_lstnet_multistock_prediction(request: Request, pred_len: int = 50):
+#     try:
+#         # Get the database connection from the app
+#         database = request.app.database
 
-#     model = load_model(join(WORKING_DIR, 'static/models/lstm_model.h5'))
+#         # Access the 'prediction' collection
+#         collection: Collection = database['prediction']
 
 
-#     seq_length = 5
-#     last_sequence = data[-seq_length:]
-#     last_sequence = np.reshape(last_sequence, (1, seq_length, 1))
+#         # Calculate the start and end dates
+#         start_date = datetime.now().date()
+#         end_date = start_date + timedelta(days=pred_len)
 
-#     next_day_prediction = model.predict(last_sequence)
-#     next_day_prediction = scaler.inverse_transform(next_day_prediction)
-#     prediction_result = float(next_day_prediction[0,0])
+#         # Fetch records from the collection based on the specified filters
+#         records = collection.find({
+#             "algorithm": "lstnet",
+#             "date": {"$gte": start_date.isoformat(), "$lt": end_date.isoformat()}
+#         }).sort("date", 1).limit(pred_len)
 
-#     return {'vn30_prediction': prediction_result}
+#         # Prepare the JSON response
+#         data = {"data": {"VN30": []}}
+#         for record in records:
+#             data["data"]["VN30"].append({
+#                 "date": record["date"],
+#                 "value": record["value"]
+#             })
 
-@router.get('/vn30/long-term')
-def get_long_term_forecasting(request: Request, pred_len: int=50):
-    data, timestamp = get_vn30_data(request.app.database, seq_len=50, is_close_last=True)
-    predict_result = generate_long_term_predict(data, timestamp, pred_len)
-    return {'data': predict_result}
+#         return data
+#     except Exception as e:
+#         # Handle the exception and return an error response
+#         error_message = {"error": str(e)}
+#         return error_message
+
+
+def fetch_records(request, algorithm, pred_len):
+    # Get the database connection from the app
+    database = request.app.database
+
+    # Access the 'prediction' collection
+    collection: Collection = database['prediction']
+    # Calculate the start and end dates
+    start_date = datetime.now().date()
+    end_date = start_date + timedelta(days=pred_len)
+
+    # Fetch records from the collection based on the specified filters
+    records = collection.find({
+        "algorithm": algorithm,
+        "date": {"$gte": start_date.isoformat(), "$lt": end_date.isoformat()}
+    }).sort("date", 1).limit(pred_len)
+
+    # Prepare the JSON response
+    data = {"data": {"VN30": []}}
+    for record in records:
+        data["data"]["VN30"].append({
+            "date": record["date"],
+            "value": record["value"]
+        })
+
+    return data
 
 @router.get('/lstnet')
-def get_lstnet_multistock_prediction(request: Request, pred_len: int=50):
-    data, timestamp = get_multistock_data(request.app.database, seq_len=100)
-    predict_result = generate_multistock_lstnet_predict(data, timestamp, pred_len)
-    return {'data': predict_result}
+def get_lstnet_multistock_prediction(request: Request, pred_len: int = 50):
+    try:
+        # Fetch records for 'lstnet' algorithm
+        return fetch_records(request, "lstnet", pred_len)
+
+    except Exception as e:
+        # Handle the exception and return an error response
+        error_message = {"error": str(e)}
+        return error_message
 
 @router.get('/mtgnn')
-def get_mtgnn_multistock_prediction(request: Request, pred_len: int=50):
-    data, timestamp = get_multistock_data(request.app.database, seq_len=100)
-    predict_result = generate_multistock_mtgnn_predict(data, timestamp, pred_len)
-    return {'data': predict_result}
+def get_mtgnn_multistock_prediction(request: Request, pred_len: int = 50):
+    try:
+        # Fetch records for 'mtgnn' algorithm
+        return fetch_records(request,"mtgnn", pred_len)
 
-@router.get('/xgboost')
-def get_xgboost_multistock_prediction(request: Request, pred_len: int=50):
-    data, timestamp = get_multistock_data(request.app.database, seq_len=11)
-    predict_result = generate_multistock_xgboost_predict(data, timestamp, pred_len)
-    return {'data': predict_result}
-
-@router.get('/random-forest')
-def get_xgboost_multistock_prediction(request: Request, pred_len: int=50):
-    data, timestamp = get_multistock_data(request.app.database, seq_len=11)
-    predict_result = generate_multistock_random_forest_predict(data, timestamp, pred_len)
-    return {'data': predict_result}
+    except Exception as e:
+        # Handle the exception and return an error response
+        error_message = {"error": str(e)}
+        return error_message
 
 @router.get('/var')
-def get_xgboost_multistock_prediction(request: Request, pred_len: int=50):
-    data, timestamp = get_multistock_data(request.app.database, seq_len=5)
-    predict_result = generate_multistock_var_predict(data, timestamp, pred_len)
-    return {'data': predict_result}
+def get_var_multistock_prediction(request: Request, pred_len: int = 50):
+    try:
+        # Fetch records for 'var' algorithm
+        return fetch_records(request, "var", pred_len)
 
-@router.get('/lstm')
-def get_xgboost_multistock_prediction(request: Request, pred_len: int=50):
-    data, timestamp = get_multistock_data(request.app.database, seq_len=5)
-    predict_result = generate_multistock_lstm_predict(data, timestamp, pred_len)
-    return {'data': predict_result}
+    except Exception as e:
+        # Handle the exception and return an error response
+        error_message = {"error": str(e)}
+        return error_message
+
+# @router.get('/lstm')
+# def get_xgboost_multistock_prediction(request: Request, pred_len: int=50):
+#     data, timestamp = get_multistock_data(request.app.database, seq_len=5)
+#     predict_result = generate_multistock_lstm_predict(data, timestamp, pred_len)
+#     return {'data': predict_result}
+
+# @router.get('/xgboost')
+# def get_xgboost_multistock_prediction(request: Request, pred_len: int=50):
+#     data, timestamp = get_multistock_data(request.app.database, seq_len=11)
+#     predict_result = generate_multistock_xgboost_predict(data, timestamp, pred_len)
+#     return {'data': predict_result}
+
+# @router.get('/random-forest')
+# def get_xgboost_multistock_prediction(request: Request, pred_len: int=50):
+#     data, timestamp = get_multistock_data(request.app.database, seq_len=11)
+#     predict_result = generate_multistock_random_forest_predict(data, timestamp, pred_len)
+#     return {'data': predict_result}
