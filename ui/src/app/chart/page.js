@@ -5,7 +5,7 @@ import ChartComponent from '../components/ChartComponent';
 const apiUrl = 'http://localhost:8000';
 
 export default function ChartPage() {
-  const [algorithm, setAlgorithm] = useState('');
+  const [algorithm, setAlgorithm] = useState('long-term');
   const [predictLength, setPredictLength] = useState(7);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -103,55 +103,59 @@ export default function ChartPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between md:p-24">
-      {/* Chart Area */}
       <div className="z-10 w-full md:max-w-8xl max-h-[80%] items-center justify-between font-mono text-sm lg:flex">
         {isLoading ? (
-          <p>Loading...</p> // Show a loading indicator while data is being fetched
+          <p>Loading...</p>
         ) : (
           <ChartComponent className="w-full h-full" data={data} predictData={predictData?.data || []} />
         )}
       </div>
 
-      {/* Radio Selections */}
-      <div>
+      <div className="flex items-center justify-center mt-4">
         {['lstnet', 'lstm', 'xgboost', 'mtgnn', 'random_forest', 'var', 'long-term'].map((option) => (
-          <div key={option}>
-            <label>
-              <input
-                type="radio"
-                value={option}
-                checked={algorithm === option}
-                onChange={handleOptionChange}
-              />
-              {option}
-            </label>
-          </div>
+          <label key={option} className="mr-4">
+            <input
+              type="radio"
+              value={option}
+              checked={algorithm === option}
+              onChange={handleOptionChange}
+            />
+            {option}
+          </label>
         ))}
       </div>
 
-      {/* Input */}
-      <div>
+      <div className="flex items-center justify-center mt-4">
         <input
-          type="text"
+          type="range"
+          min="1"
+          max="100"
           value={predictLength}
           onChange={handleInputChange}
-          placeholder="Enter prediction length"
+          className="rounded-md w-64"
         />
-      </div>
-
-      {/* Button */}
-      <div>
-        <button onClick={handleButtonClick}>Execute API</button>
+        <span className="ml-2">{predictLength} days</span>
+        <button onClick={handleButtonClick} className="ml-4 px-4 py-2 bg-blue-500 text-white rounded-md">
+          Execute API
+        </button>
       </div>
 
       {predictData?.predictionMetric && (
-        <div>
-          <h2>Prediction Metric</h2>
-          <p>MAPE: {predictData.predictionMetric.mape}</p>
-          <p>RMSE: {predictData.predictionMetric.rmse}</p>
-          <p>MAE: {predictData.predictionMetric.mae}</p>
+        <div className="mt-4 border border-gray-300 rounded-md p-4">
+          <h2 className="mb-2">Prediction Metric</h2>
+          <p>
+            <strong>MAPE:</strong> {predictData.predictionMetric.mape}
+          </p>
+          <p>
+            <strong>RMSE:</strong> {predictData.predictionMetric.rmse}
+          </p>
+          <p>
+            <strong>MAE:</strong> {predictData.predictionMetric.mae}
+          </p>
         </div>
       )}
     </main>
+
   );
+
 }
