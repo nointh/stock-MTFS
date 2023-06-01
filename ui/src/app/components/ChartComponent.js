@@ -15,8 +15,6 @@ const ChartComponent = props => {
 		} = {},
 		predictData,
 	} = props;
-	console.log("props.data", props.data)
-	console.log("props.predict", props.predictData)
 	const [currentData, setCurrentData] = useState(null)
 	const [isCurrentDataVisible, setCurrentDataVisible] = useState(true)
 	const [chartType, setChartType] = useState('line')
@@ -33,7 +31,21 @@ const ChartComponent = props => {
 	}
 	useEffect(
 		() => {
-			const allData = [...data, ...predictData]
+			const allData = [...data, ...predictData];
+
+			// Sort allData by time (date)
+			allData.sort((a, b) => a.time.localeCompare(b.time));
+
+			// Remove duplicates based on time
+			const uniqueData = [];
+			const uniqueDates = new Set();
+			allData.forEach((element) => {
+				const date = element.time.substring(0, 10);
+				if (!uniqueDates.has(date)) {
+					uniqueDates.add(date);
+					uniqueData.push(element);
+				}
+			});
 
 			const handleResize = () => {
 				chart.applyOptions({ width: chartContainerRef.current.clientWidth });
@@ -58,14 +70,14 @@ const ChartComponent = props => {
 			chart.timeScale().fitContent();
 
 			const priceSeries = chart.addLineSeries({ lineColor, topColor: areaTopColor, bottomColor: areaBottomColor, lineWidth: 2, priceScaleId: 'right', visible: chartType == 'line' });
-			priceSeries.setData(data.map(
+			priceSeries.setData(uniqueData.map(
 				element => {
 					return { 'time': element['time'], 'value': element['close'] }
 				}));
 
 			const candleSeries = chart.addCandlestickSeries(
 				{ lineColor, topColor: areaTopColor, bottomColor: areaBottomColor, lineWidth: 2, visible: chartType === 'candle' });
-			candleSeries.setData(data.map(
+			candleSeries.setData(uniqueData.map(
 				element => {
 					return {
 						...element, 'time': element['time']
@@ -74,7 +86,7 @@ const ChartComponent = props => {
 			));
 			const areaSeries = chart.addAreaSeries(
 				{ lineColor, topColor: areaTopColor, bottomColor: areaBottomColor, lineWidth: 2, visible: chartType === 'area' });
-			areaSeries.setData(data.map(
+			areaSeries.setData(uniqueData.map(
 				element => {
 					return { 'time': element['time'], 'value': element['close'] }
 				}));
@@ -90,7 +102,7 @@ const ChartComponent = props => {
 					bottom: 0,
 				},
 			});
-			volumeSeries.setData(data.map(
+			volumeSeries.setData(uniqueData.map(
 				element => {
 					return {
 						'time': element['time'],
@@ -102,16 +114,14 @@ const ChartComponent = props => {
 			const predictPriceSeries = chart.addLineSeries(
 				{ lineColor: 'orange', topColor: areaTopColor, bottomColor: areaBottomColor, lineWidth: 2, visible: chartType === 'line' });
 
-			// predictPriceSeries.setData([data.slice(-1)[0], ...predictData].map(
-			predictPriceSeries.setData([...predictData].map(
+			predictPriceSeries.setData(predictData.map(
 				element => {
 					return { 'time': element['time'], 'value': element['close'], 'color': 'orange' }
 				}))
 
 			const predictAreaSeries = chart.addAreaSeries(
 				{ lineColor: 'orange', topColor: 'rgb(255, 213, 97)', bottomColor: 'rgb(242, 217, 148)', lineWidth: 2, visible: chartType === 'area' });
-			// predictAreaSeries.setData([data.slice(-1)[0], ...predictData].map(
-			predictAreaSeries.setData( [...predictData].map(
+			predictAreaSeries.setData(predictData.map(
 				element => {
 					return { 'time': element['time'], 'value': element['close'] }
 				}));
@@ -161,9 +171,8 @@ const ChartComponent = props => {
 				}));
 
 			chart.subscribeCrosshairMove((param) => {
-				const datapoint = allData.find(point => point.time === param.time);
+				const datapoint = uniqueData.find(point => point.time === param.time);
 				if (datapoint && isCurrentDataVisible) {
-					console.log(datapoint);
 					setCurrentData(datapoint);
 				}
 			});

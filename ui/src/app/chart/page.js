@@ -16,9 +16,11 @@ export default function ChartPage() {
 
   useEffect(() => {
     if (predictData) {
-      setData((prevData) => [...prevData, ...predictData]);
+      setData((prevData) => [...prevData.slice(0, -predictData.length), ...predictData]);
     }
   }, [predictData]);
+
+
 
   const handleOptionChange = (event) => {
     setAlgorithm(event.target.value);
@@ -27,21 +29,24 @@ export default function ChartPage() {
   const handleInputChange = (event) => {
     setPredictLength(event.target.value);
   };
+
   const handleButtonClick = () => {
+    setPredictData(null); // Reset predictData to null before fetching new data
     fetchPredictData();
   };
 
+
   async function fetchPredictData() {
     const apiUrl = algorithm === "long-term"
-      ? `https://ec2-13-211-157-7.ap-southeast-2.compute.amazonaws.com/predict/vn30/long-term?pred_len=${predictLength}`
-      : `https://ec2-13-211-157-7.ap-southeast-2.compute.amazonaws.com/predict/${algorithm}?pred_len=${predictLength}`;
+      ? `http://localhost:8000/predict/vn30/long-term?pred_len=${predictLength}`
+      : `http://localhost:8000/predict/${algorithm}?pred_len=${predictLength}`;
 
     try {
       const response = await fetch(apiUrl);
       const data = await response.json();
 
-      const formattedData = algorithm === "long-term"
-        ? data.data.map(({ date, close, open, high, low, volume, change }) => ({
+      const formattedData =
+        data.data.VN30.map(({ date, close, open, high, low, volume, change }) => ({
           open: open || 0,
           close: close || 0,
           high: high || 0,
@@ -49,18 +54,8 @@ export default function ChartPage() {
           volume: volume || 0,
           time: date.substring(0, 10),
           change: change || 0,
-        })).sort((a, b) => a.time.localeCompare(b.time))
-        : data.data.VN30.map(({ date, value, open, high, low, volume, change }) => ({
-          open: open || 0,
-          close: value || 0,
-          high: high || 0,
-          low: low || 0,
-          volume: volume || 0,
-          time: date.substring(0, 10),
-          change: change || 0,
         })).sort((a, b) => a.time.localeCompare(b.time));
 
-      console.log('predict Data', formattedData);
       setPredictData(formattedData);
     } catch (error) {
       console.error(error);
@@ -70,7 +65,7 @@ export default function ChartPage() {
 
   async function fetchData() {
     try {
-      const res = await fetch(`https://ec2-13-211-157-7.ap-southeast-2.compute.amazonaws.com/history`);
+      const res = await fetch(`http://localhost:8000/history`);
       const data = await res.json();
 
       const uniqueDates = new Set(); // Set to store unique dates
@@ -90,8 +85,7 @@ export default function ChartPage() {
         }
         return accumulator;
       }, []).sort((a, b) => a.time.localeCompare(b.time)); // Sort the array by time (date)
-
-      // console.log("history res", formattedData);
+      console.log("formatedData :", formattedData)
       setData(formattedData);
       setIsLoading(false); // Set loading state to false after data has been fetched
     } catch (error) {
@@ -114,7 +108,7 @@ export default function ChartPage() {
 
       {/* Radio Selections */}
       <div>
-        {['lstnet', 'lstm', 'xgboost', 'mtgnn', 'random-forest', 'var', 'long-term'].map((option) => (
+        {['lstnet', 'lstm', 'xgboost', 'mtgnn', 'random_forest', 'var', 'long-term'].map((option) => (
           <div key={option}>
             <label>
               <input
