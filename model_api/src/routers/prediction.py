@@ -14,7 +14,7 @@ def fetch_records(request, algorithm, pred_len):
     database = request.app.database
 
     # Access the 'prediction' collection
-    collection: Collection = database['prediction']
+    collection = database['prediction']
     # Calculate the start and end dates
     # start_date = datetime.now().date() + timedelta(days=1)
     start_date = datetime.now().date()

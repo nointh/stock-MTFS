@@ -21,7 +21,7 @@ mongo_client = MongoClient(mongo_uri)
 database = mongo_client['stock_price']
 collection = database['prediction']
 
-algorithms = ["long_term", "mtgnn", "lstm", "var", "lstnet", "xgboost", "random-forest"]
+algorithms = ["random_forest", "long_term", "mtgnn", "lstm", "var", "lstnet", "xgboost"]
 
 # Loop through each algorithm and insert/update VN30 data in MongoDB collection
 for algorithm in algorithms:
