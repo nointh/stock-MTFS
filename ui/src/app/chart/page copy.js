@@ -2,14 +2,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ChartComponent from '../components/ChartComponent';
 
-const apiUrl = 'http://localhost:8000';
-
 export default function ChartPage() {
   const [algorithm, setAlgorithm] = useState('');
   const [predictLength, setPredictLength] = useState(7);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [predictData, setPredictData] = useState(null);
+  const [predictionMetric, setPredictionMetric] = useState(null);
   const historyDataRef = useRef([]);
 
   useEffect(() => {
@@ -19,6 +18,12 @@ export default function ChartPage() {
   useEffect(() => {
     if (predictData) {
       setData([...historyDataRef.current, ...predictData.data]);
+    }
+  }, [predictData]);
+
+  useEffect(() => {
+    if (predictData && predictData.predictionMetric) {
+      setPredictionMetric(predictData.predictionMetric);
     }
   }, [predictData]);
 
@@ -36,11 +41,13 @@ export default function ChartPage() {
   };
 
   async function fetchPredictData() {
-    const endpoint = algorithm === 'long-term' ? `vn30/long-term` : algorithm;
-    const url = `${apiUrl}/predict/${endpoint}?pred_len=${predictLength}`;
+    const apiUrl =
+      algorithm === 'long-term'
+        ? `http://localhost:8000/predict/vn30/long-term?pred_len=${predictLength}`
+        : `http://localhost:8000/predict/${algorithm}?pred_len=${predictLength}`;
 
     try {
-      const response = await fetch(url);
+      const response = await fetch(apiUrl);
       const data = await response.json();
 
       const formattedData = data.data.VN30.map(({ date, close, open, high, low, volume, change }) => ({
@@ -71,7 +78,7 @@ export default function ChartPage() {
 
   async function fetchData() {
     try {
-      const res = await fetch(`${apiUrl}/history`);
+      const res = await fetch(`http://localhost:8000/history`);
       const data = await res.json();
 
       const uniqueDates = new Set(); // Set to store unique dates
@@ -101,6 +108,7 @@ export default function ChartPage() {
     }
   }
 
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between md:p-24">
       {/* Chart Area */}
@@ -129,6 +137,7 @@ export default function ChartPage() {
         ))}
       </div>
 
+
       {/* Input */}
       <div>
         <input
@@ -144,14 +153,15 @@ export default function ChartPage() {
         <button onClick={handleButtonClick}>Execute API</button>
       </div>
 
-      {predictData?.predictionMetric && (
-        <div>
-          <h2>Prediction Metric</h2>
-          <p>MAPE: {predictData.predictionMetric.mape}</p>
-          <p>RMSE: {predictData.predictionMetric.rmse}</p>
-          <p>MAE: {predictData.predictionMetric.mae}</p>
-        </div>
-      )}
+      {
+        predictData?.predictionMetric && (
+          <div>
+            <h2>Prediction Metric</h2>
+            <p>MAPE: {predictData.predictionMetric.mape}</p>
+            <p>RMSE: {predictData.predictionMetric.rmse}</p>
+            <p>MAE: {predictData.predictionMetric.mae}</p>
+          </div>
+        )}
     </main>
   );
 }

@@ -32,6 +32,7 @@ const ChartComponent = props => {
 	useEffect(
 		() => {
 			const allData = [...data, ...predictData];
+			console.log("allData: ",allData)
 
 			// Sort allData by time (date)
 			allData.sort((a, b) => a.time.localeCompare(b.time));
