@@ -1,4 +1,6 @@
 from pydantic import BaseModel
+from typing import List
+
 import datetime
 class PriceModel(BaseModel):
     date: datetime.date
@@ -11,4 +13,5 @@ class PriceModel(BaseModel):
 class StockModel(BaseModel):
     ticker: str
     
-    data: list[PriceModel] = []
+    data: List[PriceModel] = []
+
