@@ -57,9 +57,13 @@ export default function ChartPage() {
       })).sort((a, b) => a.time.localeCompare(b.time));
 
       const predictionMetric = {
-        mape: data.predictionMetric.MAPE || 0,
-        rmse: data.predictionMetric.RMSE || 0,
-        mae: data.predictionMetric.MAE || 0,
+        ape: data.predictionMetric?.ape || 0,
+        me: data.predictionMetric?.me || 0,
+        mae: data.predictionMetric?.mae || 0,
+        mpe: data.predictionMetric?.mpe || 0,
+        rmse: data.predictionMetric?.rmse || 0,
+        corr: data.predictionMetric?.corr || 0,
+        minmax: data.predictionMetric?.minmax || 0,
       };
 
       const formattedDataWithMetric = {
@@ -148,18 +152,18 @@ export default function ChartPage() {
               <button onClick={handleButtonClick} className="w-full px-4 py-2 bg-blue-500 text-white rounded-md font-bold">
                 Predict
               </button>
-
               {predictData?.predictionMetric && (
                 <div className="mt-4 rounded-lg bg-blue-100 p-3 w-full">
                   <p className="text-lg font-bold mb-2">{algorithmMetric === '' ? 'Algorithm' : algorithmMetric}</p>
                   <div className="flex flex-col">
-                    <p className="text-gray-900">MAPE: {predictData.predictionMetric.mape}</p>
                     <p className="text-gray-900">RMSE: {predictData.predictionMetric.rmse}</p>
                     <p className="text-gray-900">MAE: {predictData.predictionMetric.mae}</p>
+                    <p className="text-gray-900">MPE: {predictData.predictionMetric.mpe}</p>
+                    <p className="text-gray-900">Corr: {predictData.predictionMetric.corr}</p>
+                    <p className="text-gray-900">Minmax: {predictData.predictionMetric.minmax}</p>
                   </div>
                 </div>
               )}
-
             </div>
           </div>
         </div>
