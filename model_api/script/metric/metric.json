@@ -1,44 +1,68 @@
 [
-  {
-    "algorithm": "lstnet",
-    "MAE": 0.1,
-    "RMSE": 0.1,
-    "MAPE": 0.1
-  },
-  {
-    "algorithm": "lstm",
-    "MAE": 0.1,
-    "RMSE": 0.1,
-    "MAPE": 0.1
-  },
-  {
-    "algorithm": "mtgnn",
-    "MAE": 0.1,
-    "RMSE": 0.1,
-    "MAPE": 0.1
-  },
-  {
-    "algorithm": "xgboost" ,
-    "MAE": 0.1,
-    "RMSE": 0.1,
-    "MAPE": 0.1
-  },
-  {
-    "algorithm": "long_term",
-    "MAE": 0.1,
-    "RMSE": 0.1,
-    "MAPE": 0.1
-  },
-  {
-    "algorithm": "var",
-    "MAE": 0.1,
-    "RMSE": 0.1,
-    "MAPE": 0.1
-  },
-  {
-    "algorithm": "random_forest",
-    "MAE": 0.1,
-    "RMSE": 0.1,
-    "MAPE": 0.1
-  }
+    {
+        "algorithm": "long_term",
+        "me": -223.5595,
+        "mae": 227.9134,
+        "mpe": -0.1559,
+        "rmse": 266.7029,
+        "corr": 0.9708,
+        "minmax": 0.1604
+    },
+    {
+        "algorithm": "lstnet",
+        "me": -223.5595,
+        "mae": 227.9134,
+        "mpe": -0.1559,
+        "rmse": 266.7029,
+        "corr": 0.9708,
+        "minmax": 0.1604
+    },
+    {
+        "algorithm": "mtgnn",
+        "me": -223.5595,
+        "mae": 227.9134,
+        "mpe": -0.1559,
+        "rmse": 266.7029,
+        "corr": 0.9708,
+        "minmax": 0.1604
+    },
+    {
+        "algorithm": "lstm",
+        "me": -223.5595,
+        "mae": 227.9134,
+        "mpe": -0.1559,
+        "rmse": 266.7029,
+        "corr": 0.9708,
+        "minmax": 0.1604
+    },
+    {
+        "algorithm": "xgboost",
+        "mape": 0.0127,
+        "me": 1.4948,
+        "mae": 16.0431,
+        "mpe": 0.0013,
+        "rmse": 21.7196,
+        "corr": 0.9938,
+        "minmax": 0.0125
+    },
+    {
+        "algorithm": "var",
+        "mape": 0.011,
+        "me": 1.6441,
+        "mae": 13.8366,
+        "mpe": 0.0014,
+        "rmse": 19.3908,
+        "corr": 0.995,
+        "minmax": 0.0108
+    },
+    {
+        "algorithm": "random_forest",
+        "mape": 0.0117,
+        "me": 0.3698,
+        "mae": 14.6459,
+        "mpe": 0.0005,
+        "rmse": 20.206,
+        "corr": 0.9946,
+        "minmax": 0.0115
+    }
 ]
