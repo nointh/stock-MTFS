@@ -57,9 +57,9 @@ export default function ChartPage() {
       })).sort((a, b) => a.time.localeCompare(b.time));
 
       const predictionMetric = {
-        mape: data.mape || 0,
-        rmse: data.rmse || 0,
-        mae: data.mae || 0,
+        mape: data.predictionMetric.MAPE || 0,
+        rmse: data.predictionMetric.RMSE || 0,
+        mae: data.predictionMetric.MAE || 0,
       };
 
       const formattedDataWithMetric = {
