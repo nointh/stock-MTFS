@@ -6,6 +6,7 @@ const apiUrl = 'http://localhost:8000';
 
 export default function ChartPage() {
   const [algorithm, setAlgorithm] = useState('long-term');
+  const [algorithmMetric, setAlgorithmMetric] = useState('');
   const [predictLength, setPredictLength] = useState(7);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,7 +32,8 @@ export default function ChartPage() {
   };
 
   const handleButtonClick = () => {
-    setPredictData(null); // Reset predictData to null before fetching new data
+    setPredictData(null);
+    setAlgorithmMetric(algorithm) // Reset predictData to null before fetching new data
     fetchPredictData();
   };
 
@@ -135,8 +137,8 @@ export default function ChartPage() {
               <select id="predictLength" value={predictLength} onChange={handleInputChange} className="border border-gray-300 rounded-md px-2 py-1 w-full">
                 <option value="1">1 day</option>
                 <option value="7">7 days</option>
-                <option value="30">30 days</option>
-                <option value="90">90 days</option>
+                <option value="30">1 month </option>
+                <option value="90">3 months</option>
               </select>
             </div>
 
@@ -146,13 +148,15 @@ export default function ChartPage() {
 
             {predictData?.predictionMetric && (
               <div className="mt-4 rounded-lg bg-gray-100 p-3 w-full">
-                <p className="text-lg font-bold mb-2">GRU</p>
+                <p className="text-lg font-bold mb-2">{algorithmMetric === '' ? 'Algorithm' : algorithmMetric}</p>
                 <div className="flex flex-col">
                   <p className="text-gray-900">MAPE: {predictData.predictionMetric.mape}</p>
                   <p className="text-gray-900">RMSE: {predictData.predictionMetric.rmse}</p>
+                  <p className="text-gray-900">MAE: {predictData.predictionMetric.mae}</p>
                 </div>
               </div>
             )}
+
           </div>
         </div>
       </div>

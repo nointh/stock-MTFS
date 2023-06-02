@@ -211,7 +211,7 @@ const ChartComponent = props => {
 			<div
 				className={`${className} relative text-black`}
 			>
-				{isCurrentDataVisible && currentData && <div className={`hidden sm:block absolute top-0 left-0 right-0 mx-auto z-40 p-3 bg-gray-400 bg-opacity-70 rounded-md w-1/6`}>
+				{isCurrentDataVisible && currentData && <div className={`hidden sm:block absolute top-0 left-0 right-0 mx-auto z-40 p-3 bg-gray-400 bg-opacity-20 rounded-md w-1/6`}>
 					<div className='flex justify-between'><div>Open</div> <div>{currentData['open']}</div></div>
 					<div className='flex justify-between'><div>High</div> <div>{currentData['high']}</div></div>
 					<div className='flex justify-between'><div>Close</div> <div>{currentData['close']}</div></div>
