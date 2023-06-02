@@ -100,10 +100,9 @@ export default function ChartPage() {
       setIsLoading(false); // Set loading state to false in case of an error
     }
   }
-
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between md:p-24">
-      <div className="z-10 w-full md:max-w-8xl max-h-[80%] items-center justify-between font-mono text-sm lg:flex">
+    <main className="flex min-h-screen bg-white">
+      <div className="w-9/12 p-10">
         {isLoading ? (
           <p>Loading...</p>
         ) : (
@@ -111,51 +110,53 @@ export default function ChartPage() {
         )}
       </div>
 
-      <div className="flex items-center justify-center mt-4">
-        {['lstnet', 'lstm', 'xgboost', 'mtgnn', 'random_forest', 'var', 'long-term'].map((option) => (
-          <label key={option} className="mr-4">
-            <input
-              type="radio"
-              value={option}
-              checked={algorithm === option}
-              onChange={handleOptionChange}
-            />
-            {option}
-          </label>
-        ))}
-      </div>
+      <div className="w-3/12 pt-20 px-10">
+        <div className="bg-gray-300 rounded-md p-4 text-black p-10">
+          <div className="flex flex-col items-start justify-center">
+            <div className="mb-4">
+              <label htmlFor="algorithm" className="mb-2 text-lg font-bold">
+                Select Algorithm:
+              </label>
+              <select id="algorithm" value={algorithm} onChange={handleOptionChange} className="border border-gray-300 rounded-md px-2 py-1 w-full">
+                <option value="lstnet">lstnet</option>
+                <option value="lstm">lstm</option>
+                <option value="xgboost">xgboost</option>
+                <option value="mtgnn">mtgnn</option>
+                <option value="random_forest">random_forest</option>
+                <option value="var">var</option>
+                <option value="long-term">long-term</option>
+              </select>
+            </div>
 
-      <div className="flex items-center justify-center mt-4">
-        <input
-          type="range"
-          min="1"
-          max="100"
-          value={predictLength}
-          onChange={handleInputChange}
-          className="rounded-md w-64"
-        />
-        <span className="ml-2">{predictLength} days</span>
-        <button onClick={handleButtonClick} className="ml-4 px-4 py-2 bg-blue-500 text-white rounded-md">
-          Execute API
-        </button>
-      </div>
+            <div className="mb-4">
+              <label htmlFor="predictLength" className="mb-2 text-lg font-bold ">
+                Select Prediction Length:
+              </label>
+              <select id="predictLength" value={predictLength} onChange={handleInputChange} className="border border-gray-300 rounded-md px-2 py-1 w-full">
+                <option value="1">1 day</option>
+                <option value="7">7 days</option>
+                <option value="30">30 days</option>
+                <option value="90">90 days</option>
+              </select>
+            </div>
 
-      {predictData?.predictionMetric && (
-        <div className="mt-4 border border-gray-300 rounded-md p-4">
-          <h2 className="mb-2">Prediction Metric</h2>
-          <p>
-            <strong>MAPE:</strong> {predictData.predictionMetric.mape}
-          </p>
-          <p>
-            <strong>RMSE:</strong> {predictData.predictionMetric.rmse}
-          </p>
-          <p>
-            <strong>MAE:</strong> {predictData.predictionMetric.mae}
-          </p>
+            <button onClick={handleButtonClick} className="w-full px-4 py-2 bg-blue-500 text-white rounded-md font-bold">
+              Predict
+            </button>
+
+            {predictData?.predictionMetric && (
+              <div className="mt-4 rounded-lg bg-gray-100 p-3 w-full">
+                <p className="text-lg font-bold mb-2">GRU</p>
+                <div className="flex flex-col">
+                  <p className="text-gray-900">MAPE: {predictData.predictionMetric.mape}</p>
+                  <p className="text-gray-900">RMSE: {predictData.predictionMetric.rmse}</p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      )}
+      </div>
     </main>
-
   );
 
 }

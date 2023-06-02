@@ -32,7 +32,7 @@ const ChartComponent = props => {
 	useEffect(
 		() => {
 			const allData = [...data, ...predictData];
-			console.log("allData: ",allData)
+			console.log("allData: ", allData)
 
 			// Sort allData by time (date)
 			allData.sort((a, b) => a.time.localeCompare(b.time));
@@ -209,15 +209,17 @@ const ChartComponent = props => {
 
 			</nav>
 			<div
-				className={`${className} relative`}
+				className={`${className} relative text-black`}
 			>
 				{isCurrentDataVisible && currentData && <div className={`hidden sm:block absolute top-0 left-0 right-0 mx-auto z-40 p-3 bg-gray-400 bg-opacity-70 rounded-md w-1/6`}>
 					<div className='flex justify-between'><div>Open</div> <div>{currentData['open']}</div></div>
 					<div className='flex justify-between'><div>High</div> <div>{currentData['high']}</div></div>
 					<div className='flex justify-between'><div>Close</div> <div>{currentData['close']}</div></div>
 					<div className='flex justify-between'><div>Volume</div> <div>{currentData['volume']}</div></div>
-					<div className='flex justify-between'><div>% Change</div> <div>{currentData['change']} %</div></div>
-				</div>}
+					<div className='flex justify-between'>
+						<div>% Change</div>
+						<div>{parseFloat(currentData['change']).toFixed(3)} %</div>
+					</div>				</div>}
 
 				<div className={`w-full h-full`} ref={chartContainerRef}>
 				</div>
