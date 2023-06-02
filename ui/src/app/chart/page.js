@@ -1,6 +1,7 @@
 "use client"
 import React, { useState, useEffect, useRef } from 'react';
 import ChartComponent from '../components/ChartComponent';
+import Navbar from '../components/Navbar';
 
 const apiUrl = 'http://localhost:8000';
 
@@ -103,64 +104,67 @@ export default function ChartPage() {
     }
   }
   return (
-    <main className="flex min-h-screen bg-white">
-      <div className="w-9/12 p-10">
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : (
-          <ChartComponent className="w-full h-full" data={data} predictData={predictData?.data || []} />
-        )}
-      </div>
+    <div>
+      <Navbar />
+      <main className="flex min-h-screen bg-white">
+        <div className="w-10/12 p-10">
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : (
+            <ChartComponent className="w-full h-full" data={data} predictData={predictData?.data || []} />
+          )}
+        </div>
 
-      <div className="w-3/12 pt-20 px-10">
-        <div className="bg-gray-300 rounded-md p-4 text-black p-10">
-          <div className="flex flex-col items-start justify-center">
-            <div className="mb-4">
-              <label htmlFor="algorithm" className="mb-2 text-lg font-bold">
-                Select Algorithm:
-              </label>
-              <select id="algorithm" value={algorithm} onChange={handleOptionChange} className="border border-gray-300 rounded-md px-2 py-1 w-full">
-                <option value="lstnet">lstnet</option>
-                <option value="lstm">lstm</option>
-                <option value="xgboost">xgboost</option>
-                <option value="mtgnn">mtgnn</option>
-                <option value="random_forest">random_forest</option>
-                <option value="var">var</option>
-                <option value="long-term">long-term</option>
-              </select>
-            </div>
-
-            <div className="mb-4">
-              <label htmlFor="predictLength" className="mb-2 text-lg font-bold ">
-                Select Prediction Length:
-              </label>
-              <select id="predictLength" value={predictLength} onChange={handleInputChange} className="border border-gray-300 rounded-md px-2 py-1 w-full">
-                <option value="1">1 day</option>
-                <option value="7">7 days</option>
-                <option value="30">1 month </option>
-                <option value="90">3 months</option>
-              </select>
-            </div>
-
-            <button onClick={handleButtonClick} className="w-full px-4 py-2 bg-blue-500 text-white rounded-md font-bold">
-              Predict
-            </button>
-
-            {predictData?.predictionMetric && (
-              <div className="mt-4 rounded-lg bg-gray-100 p-3 w-full">
-                <p className="text-lg font-bold mb-2">{algorithmMetric === '' ? 'Algorithm' : algorithmMetric}</p>
-                <div className="flex flex-col">
-                  <p className="text-gray-900">MAPE: {predictData.predictionMetric.mape}</p>
-                  <p className="text-gray-900">RMSE: {predictData.predictionMetric.rmse}</p>
-                  <p className="text-gray-900">MAE: {predictData.predictionMetric.mae}</p>
-                </div>
+        <div className="w-2/12 pt-20 px-10">
+          <div className="bg-blue-300 rounded-md p-4 text-black p-10">
+            <div className="flex flex-col items-start justify-center">
+              <div className="mb-4">
+                <label htmlFor="algorithm" className="mb-2 text-lg font-bold">
+                  Algorithm:
+                </label>
+                <select id="algorithm" value={algorithm} onChange={handleOptionChange} className="border border-gray-300 rounded-md px-2 py-1 w-full">
+                  <option value="lstnet">lstnet</option>
+                  <option value="lstm">lstm</option>
+                  <option value="xgboost">xgboost</option>
+                  <option value="mtgnn">mtgnn</option>
+                  <option value="random_forest">random_forest</option>
+                  <option value="var">var</option>
+                  <option value="long-term">long-term</option>
+                </select>
               </div>
-            )}
 
+              <div className="mb-4">
+                <label htmlFor="predictLength" className="mb-2 text-lg font-bold ">
+                  Prediction Length:
+                </label>
+                <select id="predictLength" value={predictLength} onChange={handleInputChange} className="border border-gray-300 rounded-md px-2 py-1 w-full">
+                  <option value="1">1 day</option>
+                  <option value="7">7 days</option>
+                  <option value="30">1 month </option>
+                  <option value="90">3 months</option>
+                </select>
+              </div>
+
+              <button onClick={handleButtonClick} className="w-full px-4 py-2 bg-blue-500 text-white rounded-md font-bold">
+                Predict
+              </button>
+
+              {predictData?.predictionMetric && (
+                <div className="mt-4 rounded-lg bg-blue-100 p-3 w-full">
+                  <p className="text-lg font-bold mb-2">{algorithmMetric === '' ? 'Algorithm' : algorithmMetric}</p>
+                  <div className="flex flex-col">
+                    <p className="text-gray-900">MAPE: {predictData.predictionMetric.mape}</p>
+                    <p className="text-gray-900">RMSE: {predictData.predictionMetric.rmse}</p>
+                    <p className="text-gray-900">MAE: {predictData.predictionMetric.mae}</p>
+                  </div>
+                </div>
+              )}
+
+            </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 
 }
