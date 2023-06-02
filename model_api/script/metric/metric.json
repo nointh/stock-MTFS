@@ -1,0 +1,44 @@
+[
+  {
+    "algorithm": "lstnet",
+    "MAE": 0.1,
+    "RMSE": 0.1,
+    "MAPE": 0.1
+  },
+  {
+    "algorithm": "lstm",
+    "MAE": 0.1,
+    "RMSE": 0.1,
+    "MAPE": 0.1
+  },
+  {
+    "algorithm": "mtgnn",
+    "MAE": 0.1,
+    "RMSE": 0.1,
+    "MAPE": 0.1
+  },
+  {
+    "algorithm": "xgboost" ,
+    "MAE": 0.1,
+    "RMSE": 0.1,
+    "MAPE": 0.1
+  },
+  {
+    "algorithm": "long_term",
+    "MAE": 0.1,
+    "RMSE": 0.1,
+    "MAPE": 0.1
+  },
+  {
+    "algorithm": "var",
+    "MAE": 0.1,
+    "RMSE": 0.1,
+    "MAPE": 0.1
+  },
+  {
+    "algorithm": "random_forest",
+    "MAE": 0.1,
+    "RMSE": 0.1,
+    "MAPE": 0.1
+  }
+]
