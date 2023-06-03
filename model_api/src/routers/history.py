@@ -1,11 +1,4 @@
-import os
-from os.path import dirname, abspath, join
-
 from fastapi import APIRouter, Request
-from model.stock_model import StockModel
-from dateutil import parser
-import datetime
-
 router = APIRouter(
     prefix='/history',
     tags=['history']
