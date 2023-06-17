@@ -128,14 +128,14 @@ export default function ChartPage() {
                 </label>
                 <select id="algorithm" value={algorithm} onChange={handleOptionChange} className="border border-gray-300 rounded-md px-2 py-1 w-full">
                   <optgroup label="Regular">
-                    <option value="lstnet">LSTNET</option>
                     <option value="lstm">LSTM</option>
                     <option value="xgboost">XGBOOST</option>
-                    <option value="mtgnn">MTGNN</option>
                     <option value="random_forest">Random Forest</option>
                     <option value="var">VAR</option>
                   </optgroup>
                   <optgroup label="Long Term">
+                    <option value="mtgnn">MTGNN</option>
+                    <option value="lstnet">LSTNET</option>
                     <option value="long-term">Long Term</option>
                   </optgroup>
                 </select>
