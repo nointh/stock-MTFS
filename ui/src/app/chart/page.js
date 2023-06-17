@@ -127,13 +127,13 @@ export default function ChartPage() {
                   Algorithm:
                 </label>
                 <select id="algorithm" value={algorithm} onChange={handleOptionChange} className="border border-gray-300 rounded-md px-2 py-1 w-full">
-                  <option value="lstnet">lstnet</option>
-                  <option value="lstm">lstm</option>
-                  <option value="xgboost">xgboost</option>
-                  <option value="mtgnn">mtgnn</option>
-                  <option value="random_forest">random_forest</option>
-                  <option value="var">var</option>
-                  <option value="long-term">long-term</option>
+                  <option value="lstnet">LSTNET</option>
+                  <option value="lstm">LSTM</option>
+                  <option value="xgboost">XGBOOST</option>
+                  <option value="mtgnn">MTGNN</option>
+                  <option value="random_forest">Random Forest</option>
+                  <option value="var">VAR</option>
+                  <option value="long-term">Long Term</option>
                 </select>
               </div>
 
