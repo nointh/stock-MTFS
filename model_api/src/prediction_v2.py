@@ -18,6 +18,8 @@ from common.generate_predict import (
     generate_multistock_lstm_predict,
 )
 from pymongo import MongoClient
+from dotenv import load_dotenv, find_dotenv
+
 
 # Load environment variables from a .env file
 load_dotenv(find_dotenv())
@@ -25,8 +27,7 @@ load_dotenv(find_dotenv())
 # Get MongoDB username and password from environment variables
 MONGO_USERNAME = os.environ.get("MONGO_USERNAME")
 MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD")
-print("MONGO_USERNAME= ",MONGO_USERNAME)
-print("MONGO_PASSWORD= ",MONGO_PASSWORD)
+
 
 # Construct the MongoDB Atlas connection URI using the username and password
 mongo_uri = f'mongodb+srv://{MONGO_USERNAME}:{MONGO_PASSWORD}@cluster0.7julke9.mongodb.net/?retryWrites=true&w=majority'
@@ -43,65 +44,80 @@ def insert_data_into_database(predict_result, algorithm):
     for result in predict_result:
         # Check if a record with the same date and algorithm already exists
         existing_record = collection.find_one({"date": result["date"], "algorithm": algorithm})
-        if not existing_record:
+        if existing_record:
+            print("Record already exists for date:", result["date"], "and algorithm:", algorithm)
+        else:
             # Insert the new record
             result["algorithm"] = algorithm
             collection.insert_one(result)
+            print("Record inserted successfully for date:", result["date"], "and algorithm:", algorithm)
 
-def get_longterm_forecasting(request: Request, pred_len: int=50):
-    data, timestamp = get_vn30_data(request.app.database, seq_len=50, is_close_last=True)
+def get_longterm_forecasting(pred_len: int=50):
+    data, timestamp = get_vn30_data(database,seq_len=50, is_close_last=True)
     predict_result = generate_long_term_predict(data, timestamp, pred_len)
     
     # Insert data into the database
     insert_data_into_database(predict_result, "longterm")
 
-def get_lstnet_multistock_prediction(request: Request, pred_len: int=50):
-    data, timestamp = get_multistock_data(request.app.database, seq_len=100)
+def get_lstnet_multistock_prediction( pred_len: int=50):
+    data, timestamp = get_multistock_data(database, seq_len=100)
     predict_result = generate_multistock_lstnet_predict(data, timestamp, pred_len)
     
+    VN30_predicted = predict_result["VN30"]
+    
     # Insert data into the database
-    insert_data_into_database(predict_result, "lstnet")
+    insert_data_into_database(VN30_predicted, "lstnet")
 
-def get_mtgnn_multistock_prediction(request: Request, pred_len: int=50):
-    data, timestamp = get_multistock_data(request.app.database, seq_len=100)
+def get_mtgnn_multistock_prediction( pred_len: int=50):
+    data, timestamp = get_multistock_data(database, seq_len=100)
     predict_result = generate_multistock_mtgnn_predict(data, timestamp, pred_len)
     
-    # Insert data into the database
-    insert_data_into_database(predict_result, "mtgnn")
+    VN30_predicted = predict_result["VN30"]
 
-def get_xgboost_multistock_prediction(request: Request, pred_len: int=50):
-    data, timestamp = get_multistock_data(request.app.database, seq_len=11)
+    # Insert data into the database
+    insert_data_into_database(VN30_predicted, "mtgnn")
+
+def get_xgboost_multistock_prediction( pred_len: int=50):
+    data, timestamp = get_multistock_data(database, seq_len=11)
     predict_result = generate_multistock_xgboost_predict(data, timestamp, pred_len)
     
-    # Insert data into the database
-    insert_data_into_database(predict_result, "xgboost")
+    VN30_predicted = predict_result["VN30"]
 
-def get_randomforest_multistock_prediction(request: Request, pred_len: int=50):
-    data, timestamp = get_multistock_data(request.app.database, seq_len=11)
+    # Insert data into the database
+    insert_data_into_database(VN30_predicted, "xgboost")
+
+def get_randomforest_multistock_prediction( pred_len: int=50):
+    data, timestamp = get_multistock_data(database, seq_len=11)
     predict_result = generate_multistock_random_forest_predict(data, timestamp, pred_len)
     
-    # Insert data into the database
-    insert_data_into_database(predict_result, "randomforest")
+    VN30_predicted = predict_result["VN30"]
 
-def get_var_multistock_prediction(request: Request, pred_len: int=50):
-    data, timestamp = get_multistock_data(request.app.database, seq_len=5)
+    # Insert data into the database
+    insert_data_into_database(VN30_predicted, "randomforest")
+
+def get_var_multistock_prediction( pred_len: int=50):
+    data, timestamp = get_multistock_data(database, seq_len=5)
     predict_result = generate_multistock_var_predict(data, timestamp, pred_len)
     
-    # Insert data into the database
-    insert_data_into_database(predict_result, "var")
+    VN30_predicted = predict_result["VN30"]
 
-def get_lstm_multistock_prediction(request: Request, pred_len: int=50):
-    data, timestamp = get_multistock_data(request.app.database, seq_len=5)
+    # Insert data into the database
+    insert_data_into_database(VN30_predicted, "var")
+
+def get_lstm_multistock_prediction( pred_len: int=50):
+    data, timestamp = get_multistock_data(database, seq_len=5)
     predict_result = generate_multistock_lstm_predict(data, timestamp, pred_len)
     
+    VN30_predicted = predict_result["VN30"]
+    
     # Insert data into the database
-    insert_data_into_database(predict_result, "lstm")
+    insert_data_into_database(VN30_predicted, "lstm")
 
 # Call the functions directly to insert their return values into the database.
-get_longterm_forecasting(request=request,pred_len=pred_len)
-get_lstnet_multistock_prediction(request=request,pred_len=pred_len)
-get_mtgnn_multistock_prediction(request=request,pred_len=pred_len)
-get_xgboost_multistock_prediction(request=request,pred_len=pred_len)
-get_randomforest_multistock_prediction(request=request,pred_len=pred_len)
-get_var_multistock_prediction(request=request,pred_len=pred_len)
-get_lstm_multistock_prediction(request=request,pred_len=pred_len) 
+get_longterm_forecasting(150)
+get_lstnet_multistock_prediction(150)
+get_mtgnn_multistock_prediction(150)
+get_xgboost_multistock_prediction(150)
+get_randomforest_multistock_prediction(150)
+get_var_multistock_prediction(150)
+get_lstm_multistock_prediction(150) 
