@@ -1,0 +1,1 @@
+{"options":{"timeseries":{"timeField":"Date","metaField":"ticker","granularity":"hours","bucketMaxSpanSeconds":{"$numberInt":"2592000"}}},"indexes":[],"collectionName":"vn30","type":"timeseries"}

@@ -1,0 +1,1 @@
+{"options":{"clusteredIndex":{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"Date","unique":true}},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"Date","unique":true,"clustered":true}],"uuid":"89fea7df16dd47139956cd4ff5731f92","collectionName":"VN30","type":"collection"}
