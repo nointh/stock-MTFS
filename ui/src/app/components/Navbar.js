@@ -5,7 +5,7 @@ export default function Navbar() {
     <nav className="flex items-center justify-between bg-blue-300 text-white py-4 px-6">
       <div>
         <Link href="/">
-          <span className="text-xl font-bold">Logo</span>
+          <img src="./src/app/components/logo.png" alt="Logo" className="h-8" />
         </Link>
       </div>
       <div className="flex items-center space-x-4">
