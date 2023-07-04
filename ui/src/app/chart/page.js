@@ -164,7 +164,7 @@ export default function ChartPage() {
                     <p className="text-gray-900">MAPE: {predictData.predictionMetric.mpe}%</p>
                     <p className="text-gray-900">MAE: {predictData.predictionMetric.mae}</p>
                     <p className="text-gray-900">RMSE: {predictData.predictionMetric.rmse}</p>
-                    <p className="text-gray-900">Corr: {predictData.predictionMetric.corr}</p>
+                    <p className="text-gray-900">Corr: {predictData.predictionMetric.corr}%</p>
                   </div>
                 </div>
               )}
