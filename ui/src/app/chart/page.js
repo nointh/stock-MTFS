@@ -41,21 +41,21 @@ export default function ChartPage() {
   async function fetchPredictData() {
     const endpoint = algorithm === 'long-term' ? `vn30/long-term` : algorithm;
     const url = `${apiUrl}/predict/${endpoint}?pred_len=${predictLength}`;
-  
+
     try {
       const response = await fetch(url);
       const data = await response.json();
-  
+
       const formattedData = data.data.VN30.map(({ date, close, open, high, low, volume, change }) => ({
-          open: open || 0,
-          close: close || 0,
-          high: high || 0,
-          low: low || 0,
-          volume: volume || 0,
-          time: date.substring(0, 10),
+        open: open || 0,
+        close: close || 0,
+        high: high || 0,
+        low: low || 0,
+        volume: volume || 0,
+        time: date.substring(0, 10),
         change: change || 0,
       })).sort((a, b) => a.time.localeCompare(b.time));
-  
+
       const predictionMetric = {
         ape: data.predictionMetric?.ape || 0,
         me: data.predictionMetric?.me || 0,
@@ -65,7 +65,7 @@ export default function ChartPage() {
         corr: data.predictionMetric?.corr || 0,
         minmax: data.predictionMetric?.minmax || 0,
       };
-  
+
       const formattedDataWithMetric = {
         data: formattedData,
         predictionMetric: predictionMetric,
@@ -74,7 +74,7 @@ export default function ChartPage() {
     } catch (error) {
       console.error(error);
     }
-  }  
+  }
 
   async function fetchData() {
     try {
@@ -127,19 +127,14 @@ export default function ChartPage() {
                   Algorithm:
                 </label>
                 <select id="algorithm" value={algorithm} onChange={handleOptionChange} className="border border-gray-300 rounded-md px-2 py-1 w-full">
-                  <optgroup label="Regular">
-                    <option value="lstm">LSTM</option>
-                    <option value="xgboost">XGBOOST</option>
-                    <option value="random_forest">Random Forest</option>
-                    <option value="var">VAR</option>
-                  </optgroup>
-                  <optgroup label="Long Term">
-                    <option value="mtgnn">MTGNN</option>
-                    <option value="lstnet">LSTNET</option>
-                    <option value="long-term">Long Term</option>
-                  </optgroup>
+                  <option value="lstm">LSTM</option>
+                  <option value="xgboost">XGBOOST</option>
+                  <option value="random_forest">Random Forest</option>
+                  <option value="var">VAR</option>
+                  <option value="mtgnn">MTGNN</option>
+                  <option value="lstnet">LSTNET</option>
+                  <option value="long-term">Long Term</option>
                 </select>
-
               </div>
 
               <div className="mb-4">
