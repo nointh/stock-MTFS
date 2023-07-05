@@ -8,6 +8,7 @@ from keras.models import load_model
 from common.constant import WORKING_DIR
 from common.prepare_data import get_multistock_data, get_vn30_data
 from common.time_features import time_features
+import json
 from common.generate_predict import (
     generate_long_term_predict,
     generate_multistock_lstnet_predict,
@@ -42,34 +43,30 @@ collection = database['prediction']
 def insert_data_into_database(predict_result, algorithm):
     # Insert data into the collection
     for result in predict_result:
+        # Format the date string
+        date_string = result["date"].strftime("%Y-%m-%dT%H:%M:%S")
+        # Rename the "value" field to "close"
+        result["close"] = result.pop("value")
         # Check if a record with the same date and algorithm already exists
-        existing_record = collection.find_one({"date": result["date"], "algorithm": algorithm})
+        existing_record = collection.find_one({"date": date_string, "algorithm": algorithm})
         if existing_record:
-            print("Record already exists for date:", result["date"], "and algorithm:", algorithm)
-
-            if algorithm == "longterm":
-                # Update the "value" field with the "close" value from result
-                collection.update_one(
-                    {"date": result["date"], "algorithm": algorithm},
-                    {"$set": {"value": result["close"]}}
-                )
-            else:
-                # Update the "value" field with the value from result
-                collection.update_one(
-                    {"date": result["date"], "algorithm": algorithm},
-                    {"$set": {"value": result["value"]}}
-                )
+            print("Record already exists for date:", date_string, "and algorithm:", algorithm)
+            # Update the "value" field with the value from result
+            collection.update_one(
+                {"date": date_string, "algorithm": algorithm},
+                {"$set": {"close": result["close"]}}
+            )
             print("Record updated successfully.")
         else:
             # Insert the new record
             result["algorithm"] = algorithm
+            result["date"] = date_string
             collection.insert_one(result)
-            print("Record inserted successfully for date:", result["date"], "and algorithm:", algorithm)
+            print("Record inserted successfully for date:", date_string, "and algorithm:", algorithm)
 
 def get_longterm_forecasting(pred_len: int=50):
     data, timestamp = get_vn30_data(database,seq_len=50, is_close_last=True)
     predict_result = generate_long_term_predict(data, timestamp, pred_len)
-    print("predict_result", predict_result)
     # Insert data into the database
     insert_data_into_database(predict_result, "longterm")
 
@@ -128,10 +125,11 @@ def get_lstm_multistock_prediction( pred_len: int=50):
     insert_data_into_database(VN30_predicted, "lstm")
 
 # Call the functions directly to insert their return values into the database.
+
 get_longterm_forecasting(150)
-    # get_lstnet_multistock_prediction(150)
-    # get_mtgnn_multistock_prediction(150)
-    # get_xgboost_multistock_prediction(150)
-    # get_randomforest_multistock_prediction(150)
-    # get_var_multistock_prediction(150)
-    # get_lstm_multistock_prediction(150) 
+get_lstnet_multistock_prediction(150)
+get_mtgnn_multistock_prediction(150)
+get_xgboost_multistock_prediction(150)
+get_randomforest_multistock_prediction(150)
+get_var_multistock_prediction(150)
+get_lstm_multistock_prediction(150) 

@@ -52,7 +52,7 @@ def generate_long_term_predict(data, timestamp, predict_len=50):
     for i, stock_price in enumerate(pred_outputs.tolist()):
         result.append({
             'date': future_timestamp[i],
-            'close': stock_price[-1],
+            'value': stock_price[-1],
             'open': stock_price[0],
             'high': stock_price[1],
             'low': stock_price[2],
