@@ -1,6 +1,5 @@
 "use client";
 import { createChart, ColorType } from 'lightweight-charts';
-import { unique } from 'next/dist/build/utils';
 import React, { useState, useEffect, useRef } from 'react';
 
 const ChartComponent = props => {
@@ -48,7 +47,7 @@ const ChartComponent = props => {
 					uniqueData.push(element);
 				}
 			});
-
+			console.log("unique data ",uniqueData)
 			const handleResize = () => {
 				chart.applyOptions({ width: chartContainerRef.current.clientWidth });
 			};
@@ -72,7 +71,6 @@ const ChartComponent = props => {
 			chart.timeScale().fitContent();
 
 			const priceSeries = chart.addLineSeries({ lineColor, topColor: areaTopColor, bottomColor: areaBottomColor, lineWidth: 2, priceScaleId: 'right', visible: chartType == 'line' });
-			console.log("unique data ",uniqueData)
 			priceSeries.setData(uniqueData.map(
 				element => {
 					return { 'time': element['time'], 'value': element['close'] }
