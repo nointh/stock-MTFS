@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import ChartComponent from '../components/ChartComponent';
 import Navbar from '../components/Navbar';
 
-const apiUrl = 'https://vn30-api.ftisu.vn';
+const apiUrl = 'http://localhost:8000/';
 
 export default function ChartPage() {
   const [algorithm, setAlgorithm] = useState('long-term');
