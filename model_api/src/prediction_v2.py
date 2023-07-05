@@ -46,18 +46,25 @@ def insert_data_into_database(predict_result, algorithm):
         existing_record = collection.find_one({"date": result["date"], "algorithm": algorithm})
         if existing_record:
             print("Record already exists for date:", result["date"], "and algorithm:", algorithm)
+
+            # Update the value field of the existing record
+            collection.update_one(
+                {"date": result["date"], "algorithm": algorithm},
+                {"$set": {"value": result["value"]}}  # Update the "value" field with the value from result
+            )
+            print("Record updated successfully.")
         else:
             # Insert the new record
             result["algorithm"] = algorithm
             collection.insert_one(result)
             print("Record inserted successfully for date:", result["date"], "and algorithm:", algorithm)
 
-def get_longterm_forecasting(pred_len: int=50):
-    data, timestamp = get_vn30_data(database,seq_len=50, is_close_last=True)
-    predict_result = generate_long_term_predict(data, timestamp, pred_len)
+# def get_longterm_forecasting(pred_len: int=50):
+#     data, timestamp = get_vn30_data(database,seq_len=50, is_close_last=True)
+#     predict_result = generate_long_term_predict(data, timestamp, pred_len)
     
-    # Insert data into the database
-    insert_data_into_database(predict_result, "longterm")
+#     # Insert data into the database
+#     insert_data_into_database(predict_result, "longterm")
 
 def get_lstnet_multistock_prediction( pred_len: int=50):
     data, timestamp = get_multistock_data(database, seq_len=100)
