@@ -12,7 +12,6 @@ router = APIRouter(
 def fetch_records(request, algorithm, pred_len):
     # Get the database connection from the app
     database = request.app.database
-
     # Access the 'prediction' collection
     collection = database['prediction']
     # Calculate the start and end dates
@@ -24,7 +23,7 @@ def fetch_records(request, algorithm, pred_len):
         "algorithm": algorithm,
         "date": {"$gte": start_date.isoformat(), "$lt": end_date.isoformat()}
     }).sort("date", 1).limit(pred_len)
-
+    print("records",records)
     # Prepare the JSON response
     data = {"data": {"VN30": []}}
     for record in records:

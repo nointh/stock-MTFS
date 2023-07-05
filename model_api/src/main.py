@@ -13,6 +13,7 @@ MONGO_USERNAME = os.environ.get("MONGO_USERNAME")
 MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD")
 
 mongo_uri = f'mongodb+srv://{MONGO_USERNAME}:{MONGO_PASSWORD}@cluster0.7julke9.mongodb.net/?retryWrites=true&w=majority'
+# mongo_uri = f'mongodb+srv://{MONGO_USERNAME}:{MONGO_PASSWORD}@cluster0.uwsidsd.mongodb.net/?retryWrites=true&w=majority'
 
 app = FastAPI(title="Multivariate time series forecasting model serving API")
 
