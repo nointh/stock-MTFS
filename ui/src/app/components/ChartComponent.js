@@ -15,7 +15,6 @@ const ChartComponent = props => {
 		} = {},
 		predictData,
 	} = props;
-	console.log("props:", props)
 	const [currentData, setCurrentData] = useState(null)
 	const [isCurrentDataVisible, setCurrentDataVisible] = useState(true)
 	const [chartType, setChartType] = useState('line')
@@ -48,7 +47,6 @@ const ChartComponent = props => {
 					uniqueData.push(element);
 				}
 			});
-			console.log("unique data ",uniqueData)
 			const handleResize = () => {
 				chart.applyOptions({ width: chartContainerRef.current.clientWidth });
 			};
