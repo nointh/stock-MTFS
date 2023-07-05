@@ -81,19 +81,15 @@ export default function ChartPage() {
       const res = await fetch(`${apiUrl}/history`);
       const data = await res.json();
 
-      // const uniqueDates = new Set(); // Set to store unique dates
-      const formattedData = data.data.reduce((accumulator, element) => {
-        accumulator.push({
-          time: element.date || "2023-05-25T00:00:00",
-          open: element.open || 0,
-          close: element.close || 0,
-          high: element.high || 0,
-          low: element.low || 0,
-          volume: element.volume || 0,
-          change: element.change || 0,
-        });
-        return accumulator;
-      }, []).sort((a, b) => a.time.localeCompare(b.time)); // Sort the array by time (date)
+      const formattedData = data.data.map((element) => ({
+        time: element.date || "2023-05-25T00:00:00",
+        open: element.open || 0,
+        close: element.close || 0,
+        high: element.high || 0,
+        low: element.low || 0,
+        volume: element.volume || 0,
+        change: element.change || 0,
+      })).sort((a, b) => a.time.localeCompare(b.time));
       console.log("formated data:", formattedData);
       setData(formattedData);
       historyDataRef.current = formattedData;
