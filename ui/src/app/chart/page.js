@@ -96,6 +96,7 @@ export default function ChartPage() {
 
 
       setData(formattedData);
+      console.log("formattedData", formattedData);
       historyDataRef.current = formattedData;
       setIsLoading(false); // Set loading state to false after data has been fetched
     } catch (error) {
