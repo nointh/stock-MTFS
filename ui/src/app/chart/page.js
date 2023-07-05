@@ -81,13 +81,13 @@ export default function ChartPage() {
       const res = await fetch(`${apiUrl}/history`);
       const data = await res.json();
 
-      const uniqueDates = new Set(); // Set to store unique dates
+      // const uniqueDates = new Set(); // Set to store unique dates
       const formattedData = data.data.reduce((accumulator, element) => {
-        const date = new Date(element.date).toISOString().substring(0, 10);
+        // const date = new Date(element.date).toISOString().substring(0, 10);
         if (!uniqueDates.has(date)) {
           uniqueDates.add(date); // Add unique date to the Set
           accumulator.push({
-            time: date,
+            time: element.date,
             open: element.open || 0,
             close: element.close || 0,
             high: element.high || 0,
