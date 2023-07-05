@@ -80,6 +80,7 @@ export default function ChartPage() {
     try {
       const res = await fetch(`${apiUrl}/history`);
       const data = await res.json();
+      console.log("res data: " + JSON.stringify(data));
 
       const uniqueDates = new Set(); // Set to store unique dates
       const formattedData = data.data.reduce((accumulator, element) => {
