@@ -47,7 +47,6 @@ const ChartComponent = props => {
 					uniqueData.push(element);
 				}
 			});
-			console.log("unique data ",uniqueData)
 			const handleResize = () => {
 				chart.applyOptions({ width: chartContainerRef.current.clientWidth });
 			};
