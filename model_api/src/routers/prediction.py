@@ -23,7 +23,6 @@ def fetch_records(request, algorithm, pred_len):
         "algorithm": algorithm,
         "date": {"$gte": start_date.isoformat(), "$lt": end_date.isoformat()}
     }).sort("date", 1).limit(pred_len)
-    print("records",records)
     # Prepare the JSON response
     data = {"data": {"VN30": []}}
     for record in records:
@@ -67,8 +66,7 @@ def get_lstnet_multistock_prediction(request: Request, pred_len: int = 50):
 def get_long_term_multistock_prediction(request: Request, pred_len: int = 50):
     try:
         # Fetch records for 'long_term' algorithm
-        return fetch_records(request, "long_term", pred_len)
-
+        return fetch_records(request, "longterm", pred_len)
     except Exception as e:
         # Handle the exception and return an error response
         error_message = {"error": str(e)}
