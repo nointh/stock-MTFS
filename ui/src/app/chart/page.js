@@ -83,12 +83,12 @@ export default function ChartPage() {
 
       const formattedData = data.data.map((element) => ({
         time: element.date || "2023-05-25T00:00:00",
-        open: element.open || 0,
-        close: element.close || 0,
-        high: element.high || 0,
-        low: element.low || 0,
-        volume: element.volume || 0,
-        change: element.change || 0,
+        open: element.open !== null ? element.open : 0,
+        close: element.close !== null ? element.close : 0,
+        high: element.high !== null ? element.high : 0,
+        low: element.low !== null ? element.low : 0,
+        volume: element.volume !== null ? element.volume : 0,
+        change: element.change !== null ? element.change : 0,
       })).sort((a, b) => a.time.localeCompare(b.time));
       console.log("formated data:", formattedData);
       setData(formattedData);
