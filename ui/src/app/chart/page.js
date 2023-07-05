@@ -82,9 +82,9 @@ export default function ChartPage() {
       const data = await res.json();
 
       const formattedData = data.data.map((element) => {
-        // const date = new Date(element.date).toISOString().substring(0, 10);
+        const date = new Date(element.date).toISOString().substring(0, 10);
         return {
-          time: element.date,
+          time: date.getDate()+1,
           open: element.open || 0,
           close: element.close || 0,
           high: element.high || 0,
