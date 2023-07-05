@@ -84,7 +84,6 @@ export default function ChartPage() {
       const uniqueDates = new Set(); // Set to store unique dates
       const formattedData = data.data.reduce((accumulator, element) => {
         const date = new Date(element.date).toISOString().substring(0, 10);
-        if (!uniqueDates.has(date)) {
           uniqueDates.add(date); // Add unique date to the Set
           accumulator.push({
             time: element.date,
@@ -95,7 +94,6 @@ export default function ChartPage() {
             volume: element.volume || 0,
             change: element.change || 0,
           });
-        }
         return accumulator;
       }, []).sort((a, b) => a.time.localeCompare(b.time)); // Sort the array by time (date)
 
