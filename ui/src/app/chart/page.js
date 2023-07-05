@@ -83,22 +83,18 @@ export default function ChartPage() {
 
       // const uniqueDates = new Set(); // Set to store unique dates
       const formattedData = data.data.reduce((accumulator, element) => {
-        // const date = new Date(element.date).toISOString().substring(0, 10);
-        if (!uniqueDates.has(date)) {
-          uniqueDates.add(date); // Add unique date to the Set
-          accumulator.push({
-            time: element.date,
-            open: element.open || 0,
-            close: element.close || 0,
-            high: element.high || 0,
-            low: element.low || 0,
-            volume: element.volume || 0,
-            change: element.change || 0,
-          });
-        }
+        accumulator.push({
+          time: element.date,
+          open: element.open || 0,
+          close: element.close || 0,
+          high: element.high || 0,
+          low: element.low || 0,
+          volume: element.volume || 0,
+          change: element.change || 0,
+        });
         return accumulator;
       }, []).sort((a, b) => a.time.localeCompare(b.time)); // Sort the array by time (date)
-      console.log("formated data:",formattedData);
+      console.log("formated data:", formattedData);
       setData(formattedData);
       historyDataRef.current = formattedData;
       setIsLoading(false); // Set loading state to false after data has been fetched
