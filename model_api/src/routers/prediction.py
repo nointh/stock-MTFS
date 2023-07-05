@@ -110,7 +110,7 @@ def get_var_multistock_prediction(request: Request, pred_len: int = 50):
 def get_random_forest_multistock_prediction(request: Request, pred_len: int = 50):
     try:
         # Fetch records for 'random_forest' algorithm
-        return fetch_records(request, "random_forest", pred_len)
+        return fetch_records(request, "randomforest", pred_len)
 
     except Exception as e:
         # Handle the exception and return an error response
