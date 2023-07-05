@@ -47,11 +47,18 @@ def insert_data_into_database(predict_result, algorithm):
         if existing_record:
             print("Record already exists for date:", result["date"], "and algorithm:", algorithm)
 
-            # Update the value field of the existing record
-            collection.update_one(
-                {"date": result["date"], "algorithm": algorithm},
-                {"$set": {"value": result["value"]}}  # Update the "value" field with the value from result
-            )
+            if algorithm == "longterm":
+                # Update the "value" field with the "close" value from result
+                collection.update_one(
+                    {"date": result["date"], "algorithm": algorithm},
+                    {"$set": {"value": result["close"]}}
+                )
+            else:
+                # Update the "value" field with the value from result
+                collection.update_one(
+                    {"date": result["date"], "algorithm": algorithm},
+                    {"$set": {"value": result["value"]}}
+                )
             print("Record updated successfully.")
         else:
             # Insert the new record
@@ -59,12 +66,12 @@ def insert_data_into_database(predict_result, algorithm):
             collection.insert_one(result)
             print("Record inserted successfully for date:", result["date"], "and algorithm:", algorithm)
 
-# def get_longterm_forecasting(pred_len: int=50):
-#     data, timestamp = get_vn30_data(database,seq_len=50, is_close_last=True)
-#     predict_result = generate_long_term_predict(data, timestamp, pred_len)
-    
-#     # Insert data into the database
-#     insert_data_into_database(predict_result, "longterm")
+def get_longterm_forecasting(pred_len: int=50):
+    data, timestamp = get_vn30_data(database,seq_len=50, is_close_last=True)
+    predict_result = generate_long_term_predict(data, timestamp, pred_len)
+    print("predict_result", predict_result)
+    # Insert data into the database
+    insert_data_into_database(predict_result, "longterm")
 
 def get_lstnet_multistock_prediction( pred_len: int=50):
     data, timestamp = get_multistock_data(database, seq_len=100)
@@ -122,9 +129,9 @@ def get_lstm_multistock_prediction( pred_len: int=50):
 
 # Call the functions directly to insert their return values into the database.
 get_longterm_forecasting(150)
-get_lstnet_multistock_prediction(150)
-get_mtgnn_multistock_prediction(150)
-get_xgboost_multistock_prediction(150)
-get_randomforest_multistock_prediction(150)
-get_var_multistock_prediction(150)
-get_lstm_multistock_prediction(150) 
+    # get_lstnet_multistock_prediction(150)
+    # get_mtgnn_multistock_prediction(150)
+    # get_xgboost_multistock_prediction(150)
+    # get_randomforest_multistock_prediction(150)
+    # get_var_multistock_prediction(150)
+    # get_lstm_multistock_prediction(150) 
