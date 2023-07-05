@@ -84,7 +84,7 @@ export default function ChartPage() {
       // const uniqueDates = new Set(); // Set to store unique dates
       const formattedData = data.data.reduce((accumulator, element) => {
         accumulator.push({
-          time: element.date,
+          time: element.date || "2023-05-25T00:00:00",
           open: element.open || 0,
           close: element.close || 0,
           high: element.high || 0,
