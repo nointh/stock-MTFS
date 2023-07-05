@@ -80,11 +80,12 @@ export default function ChartPage() {
     try {
       const res = await fetch(`${apiUrl}/history`);
       const data = await res.json();
-
       const formattedData = data.data.map((element) => {
-        const date = new Date(element.date).toISOString().substring(0, 10);
+        const date = new Date(element.date);
+        date.setDate(date.getDate() + 1);
+        const formattedDate = date.toISOString().substring(0, 10);
         return {
-          time: date.getDate()+1,
+          time: formattedDate,
           open: element.open || 0,
           close: element.close || 0,
           high: element.high || 0,
@@ -92,7 +93,7 @@ export default function ChartPage() {
           volume: element.volume || 0,
           change: element.change || 0,
         };
-      }).sort((a, b) => a.time.localeCompare(b.time)); // Sort the array by time (date)
+      }).sort((a, b) => a.time.localeCompare(b.time));
 
 
       setData(formattedData);
