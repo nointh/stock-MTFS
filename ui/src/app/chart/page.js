@@ -80,7 +80,6 @@ export default function ChartPage() {
     try {
       const res = await fetch(`${apiUrl}/history`);
       const data = await res.json();
-      console.log("res data: " + JSON.stringify(data));
 
       const uniqueDates = new Set(); // Set to store unique dates
       const formattedData = data.data.reduce((accumulator, element) => {
@@ -99,7 +98,7 @@ export default function ChartPage() {
         }
         return accumulator;
       }, []).sort((a, b) => a.time.localeCompare(b.time)); // Sort the array by time (date)
-
+      console.log("formated data:",formattedData);
       setData(formattedData);
       historyDataRef.current = formattedData;
       setIsLoading(false); // Set loading state to false after data has been fetched
